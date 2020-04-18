@@ -1,9 +1,6 @@
 # Local files
 
-data/binary/X_train.csv
-data/binary/X_test.csv
-data/multi/X_train.csv
-data/multi/X_test.csv
+data
 
 # ______________________________________________________________________________________________________________________
 
