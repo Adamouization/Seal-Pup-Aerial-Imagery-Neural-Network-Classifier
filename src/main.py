@@ -33,7 +33,7 @@ def main() -> None:
         # Start recording time.
         start_time = time.time()
 
-        # visualise_hog(X_train_HoG)
+        visualise_hog(X_train_HoG)
         # visualise_rgb_hist(X_train_colour_hists)
         visualise_class_distribution(y_train)
         # visualise_correlation(X_train, y_train)
