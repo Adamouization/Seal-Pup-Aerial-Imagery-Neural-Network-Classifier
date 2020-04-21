@@ -102,14 +102,20 @@ def load_data(dataset):
 
 
 def input_preparation(X_train, y_train):
-    # Convert class ID output to boolean integer format for logistic regression:
-    #   1 if it's a "seal", 0 if it's a "background").
-    y_train_seal = (y_train == "seal").astype(np.int)
+    if config.dataset == "binary":
+        # Convert class ID output to boolean integer format for logistic regression:
+        #   1 if it's a "seal", 0 if it's a "background").
+        y_train = (y_train == "seal").astype(np.int)
 
     # Get values in an array of shape (n,1) and then use ravel() to the convert that array shape to (n, ).
-    y_train_seal_unravelled = y_train_seal.values.ravel()
+    y_train_unravelled = y_train.values.ravel()
 
-    return X_train, y_train_seal_unravelled, y_train_seal
+    return X_train, y_train_unravelled, y_train
+
+
+def multi_input_preparation(X_train, y_train):
+    y_train_unravelled = y_train.values.ravel()
+    return X_train, y_train_unravelled
 
 
 def train_classification_models(X, y, ground_truth):

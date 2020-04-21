@@ -1,4 +1,5 @@
 import joblib
+import os
 
 import matplotlib.pyplot as plt
 
@@ -26,31 +27,37 @@ def save_plot(title):
     plt.savefig("../results/{}.png".format(title), bbox_inches='tight')
 
 
-def save_model(model, model_type):
+def save_model(model, dataset, model_type):
     """
     Function to save the model to a file.
     :param model:
     :param model_type:
     :return:
     """
-    joblib.dump(model, "trained_classifiers/{}.pkl".format(model_type))
+    joblib.dump(model, "../trained_classifiers/{}_{}.pkl".format(dataset, model_type))
 
 
-def load_model(model_type):
+def load_model(dataset, model_type):
     """
     Function to load model.
     :param model_type:
     :return:
     """
-    return joblib.load("trained_classifiers/{}.pkl".format(model_type))
+    return joblib.load("../trained_classifiers/{}_{}.pkl".format(dataset, model_type))
 
 
 def get_classifier_name(model):
     if model == "sgd":
-        return "Stochastic Gradient Descent Classifier"
+        return "SGD Classifier"
     elif model == "logistic":
         return "Logistic Regression"
     elif model == "svc_lin":
         return "Linear SVM Classifier"
     elif model == "svc_poly":
-        return "Polynomial (2nd degree) SVM Classifier"
+        return "Polynomial (^2) SVM Classifier"
+
+
+def is_trained_model_exists(dataset, model_type):
+    if os.path.isfile("../trained_classifiers/{}_{}.pkl".format(dataset, model_type)):
+        return True
+    return False
