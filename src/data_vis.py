@@ -128,10 +128,11 @@ def visualise_rgb_hist(RGB_hist):
                     max(blue_channel.iloc[0].values)) + 25)  # Add padding.
     plt.xlabel("Bins", fontsize=config.fontsizes['axis'])
     plt.ylabel("Pixel Frequency", fontsize=config.fontsizes['axis'])
-    plt.title("RGB Histogram for a single image", fontsize=config.fontsizes['title'])
+    plt.title("RGB Histogram for a single image in {} dataset".format(config.dataset),
+              fontsize=config.fontsizes['title'])
     plt.grid(color='#95a5a6', linestyle='-', linewidth=1, axis='y', alpha=0.5)
     plt.legend()
-    save_plot("rgb_hist_single_image")
+    save_plot("rgb_hist_single_image_{}".format(config.dataset))
     plt.show()
 
     # Visualise the aggregate RGB histogram for all images.
@@ -145,10 +146,11 @@ def visualise_rgb_hist(RGB_hist):
                     max(blue_channel.mean().values)) + 25)  # Add padding.
     plt.xlabel("Bins", fontsize=config.fontsizes['axis'])
     plt.ylabel("Average Pixel Frequency", fontsize=config.fontsizes['axis'])
-    plt.title("Average RGB Histogram of all images in the training set", fontsize=config.fontsizes['title'])
+    plt.title("Average RGB Histogram of all images in {} dataset".format(config.dataset),
+              fontsize=config.fontsizes['title'])
     plt.grid(color='#95a5a6', linestyle='-', linewidth=1, axis='y', alpha=0.5)
     plt.legend()
-    save_plot("rgb_avg_hist_all_training_set")
+    save_plot("{}_rgb_avg_hist_all_training_set".format(config.dataset))
     plt.show()
 
 

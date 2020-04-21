@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="train sgd" type="PythonConfigurationType" factoryName="Python" folderName="binary">
-    <output_file path="$PROJECT_DIR$/logs/binary/train_sgd.log" is_save="true" />
+  <configuration default="false" name="train logistic regression binary" type="PythonConfigurationType" factoryName="Python" folderName="binary">
+    <output_file path="$PROJECT_DIR$/logs/binary/train_logistic_regression.log" is_save="true" />
     <module name="Seal-Pup-Aerial-Imagery-Classifier" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
@@ -14,7 +14,7 @@
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main.py" />
-    <option name="PARAMETERS" value="-s train -d binary -m sgd" />
+    <option name="PARAMETERS" value="-s train -d binary -m logistic" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />
