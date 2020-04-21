@@ -36,10 +36,11 @@ def main() -> None:
         visualise_hog(X_train_HoG)
         visualise_rgb_hist(X_train_colour_hists)
         visualise_class_distribution(y_train)
-        # visualise_correlation(X_train, y_train)
+        visualise_correlation(X_train, y_train)
 
         # Print training runtime.
         print_runtime(round(time.time() - start_time, 2))
+
     elif config.section == "train" or config.section == "test":
         X, y, ground_truth = input_preparation(X_train, y_train)
         if config.section == "train":
