@@ -120,6 +120,7 @@ def train_classification_models(X, y, ground_truth):
     # Training pipeline.
     clf.fit_classifier()
     clf.k_fold_cross_validation()
+    clf.evaluate_classifier()
 
     # Print training runtime.
     print_runtime(round(time.time() - start_time, 2))

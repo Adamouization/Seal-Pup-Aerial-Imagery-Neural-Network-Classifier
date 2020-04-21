@@ -23,7 +23,7 @@ def print_runtime(runtime: float) -> None:
 
 
 def save_plot(title):
-    plt.savefig("../results/{}.png".format(title))
+    plt.savefig("../results/{}.png".format(title), bbox_inches='tight')
 
 
 def save_model(model, model_type):

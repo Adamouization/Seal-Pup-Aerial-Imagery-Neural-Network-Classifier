@@ -4,7 +4,8 @@ import pandas as pd
 from pyspin.spin import Box1, make_spin
 import seaborn as sns
 from sklearn.linear_model import LogisticRegression, SGDClassifier
-from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score, precision_score, \
+    recall_score
 from sklearn.model_selection import cross_val_predict
 from sklearn.neural_network import MLPClassifier
 from sklearn.svm import LinearSVC, SVC
@@ -22,6 +23,8 @@ class Classifier:
         self.X = X
         self.y = y
         self.ground_truth = ground_truth
+        self.folds = 3
+        self.predictions = None
 
         if model == "sgd":
             self.clf = SGDClassifier(**kwargs, max_iter=1000, tol=1e-3)
@@ -41,16 +44,33 @@ class Classifier:
     def fit_classifier(self):
         self.clf.fit(self.X, self.y)
 
-    @make_spin(Box1, "Performing k-fold cross validation...")
-    def k_fold_cross_validation(self, folds=3):
-        clf_accuracy_predictions = cross_val_predict(self.clf, self.X, self.y, cv=folds)
+    @make_spin(Box1, "Making predictions...")
+    def single_prediction(self):
+        self.predictions = self.clf.predict(self.X)
 
-        cm = confusion_matrix(self.ground_truth, clf_accuracy_predictions)
+    @make_spin(Box1, "Performing k-fold cross validation...")
+    def k_fold_cross_validation(self):
+        self.predictions = cross_val_predict(self.clf, self.X, self.y, cv=self.folds)
+
+    def evaluate_classifier(self):
+        accuracy = accuracy_score(self.ground_truth, self.predictions)
+        print("Average accuracy over {} folds: {}%".format(self.folds, round(accuracy * 100, 2)))
+
+        precision = precision_score(self.ground_truth, self.predictions, average="binary")
+        print("Precision: " + str(precision))
+
+        recall = recall_score(self.ground_truth, self.predictions, average="binary")
+        print("Recall: " + str(recall))
+
+        f1 = f1_score(self.ground_truth, self.predictions, average="binary")
+        print("F1: " + str(f1))
+
+        scores_report = classification_report(self.ground_truth, self.predictions)
+        print(scores_report)
+
+        cm = confusion_matrix(self.ground_truth, self.predictions)
         _plot_pretty_confusion_matrix(cm, ["Background", "Seal"], False)
         _plot_pretty_confusion_matrix(cm, ["Background", "Seal"], True)
-
-        accuracy = accuracy_score(self.ground_truth, clf_accuracy_predictions)
-        print("Average accuracy over {} folds: {}%".format(folds, round(accuracy * 100, 2)))
 
 
 def _plot_pretty_confusion_matrix(cm, labels: list, is_normalised: bool) -> None:
