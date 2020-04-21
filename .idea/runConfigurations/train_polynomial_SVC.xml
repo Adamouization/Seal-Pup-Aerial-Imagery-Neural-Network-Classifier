@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="train polynomial SVC" type="PythonConfigurationType" factoryName="Python">
-    <output_file path="$PROJECT_DIR$/logs/train_SVC_poly.log" is_save="true" />
+  <configuration default="false" name="train polynomial SVC" type="PythonConfigurationType" factoryName="Python" folderName="binary">
+    <output_file path="$PROJECT_DIR$/logs/binary/train_SVC_poly.log" is_save="true" />
     <module name="Seal-Pup-Aerial-Imagery-Classifier" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />

@@ -94,29 +94,71 @@ def visualise_class_distribution(outputs):
         outputs.info()
 
     total_occurrences = outputs.shape[0]
-    class_distribution = {
-        'seal': {
-            'occurrences': outputs[0].value_counts()["seal"],
-            'distribution': round(outputs[0].value_counts()["seal"] / total_occurrences, 5)
-        },
-        'background': {
-            'occurrences': outputs[0].value_counts()["background"],
-            'distribution': round(outputs[0].value_counts()["background"] / total_occurrences, 5)
+
+    # Get the number of occurrences and % distribution of each class.
+    class_distribution = dict()
+    if config.dataset == "binary":
+        class_distribution = {
+            'background': {
+                'occurrences': outputs[0].value_counts()["background"],
+                'distribution': round(outputs[0].value_counts()["background"] / total_occurrences, 5)
+            },
+            'seal': {
+                'occurrences': outputs[0].value_counts()["seal"],
+                'distribution': round(outputs[0].value_counts()["seal"] / total_occurrences, 5)
+            }
         }
-    }
+    elif config.dataset == "multi":
+        class_distribution = {
+            'whitecoat': {
+                'occurrences': outputs[0].value_counts()["whitecoat"],
+                'distribution': round(outputs[0].value_counts()["whitecoat"] / total_occurrences, 5)
+            },
+            'background': {
+                'occurrences': outputs[0].value_counts()["background"],
+                'distribution': round(outputs[0].value_counts()["background"] / total_occurrences, 5)
+            },
+            'dead pup': {
+                'occurrences': outputs[0].value_counts()["dead pup"],
+                'distribution': round(outputs[0].value_counts()["dead pup"] / total_occurrences, 5)
+            },
+            'juvenile': {
+                'occurrences': outputs[0].value_counts()["juvenile"],
+                'distribution': round(outputs[0].value_counts()["juvenile"] / total_occurrences, 5)
+            },
+            'moulted pup': {
+                'occurrences': outputs[0].value_counts()["moulted pup"],
+                'distribution': round(outputs[0].value_counts()["moulted pup"] / total_occurrences, 5)
+            },
+        }
     print(class_distribution)
 
     # Data preparation for the bar chart.
-    data = [class_distribution['seal']['occurrences'], class_distribution['background']['occurrences']]
-    value_labels = [class_distribution['seal']['distribution'], class_distribution['background']['distribution']]
-    x_axis_labels = ["seal", "background"]
+    data = list()
+    x_axis_labels = list()
+    if config.dataset == "binary":
+        data = [
+            class_distribution['background']['occurrences'],
+            class_distribution['seal']['occurrences']
+        ]
+        x_axis_labels = ["background", "seal"]
+    elif config.dataset == "multi":
+        data = [
+            class_distribution['background']['occurrences'],
+            class_distribution['whitecoat']['occurrences'],
+            class_distribution['moulted pup']['occurrences'],
+            class_distribution['dead pup']['occurrences'],
+            class_distribution['juvenile']['occurrences']
+        ]
+        x_axis_labels = ["background", "whitecoat", "moulted pup", "dead pup", "juvenile"]
 
     # Bar chart.
     plt.figure(figsize=(10, 8))
     plt.xticks(range(len(data)), x_axis_labels)
     plt.xlabel("Class", fontsize=config.fontsizes['axis'])
     plt.ylabel("Occurrences", fontsize=config.fontsizes['axis'])
-    plt.title("Binary dataset: Class frequency occurrences & distribution", fontsize=config.fontsizes['title'])
+    plt.title("{} dataset: Class frequency occurrences & distribution".format(config.dataset),
+              fontsize=config.fontsizes['title'])
     plt.bar(x_axis_labels, data, color='steelblue')
     plt.grid(color='#95a5a6', linestyle='-', linewidth=1, axis='y', alpha=0.5)
 
@@ -125,7 +167,7 @@ def visualise_class_distribution(outputs):
         plt.text(a, b, "{}%".format(str(round(class_distribution[a]['distribution'] * 100, 2))), fontsize=15)
 
     # Save and display chart.
-    save_plot("binary_class_distribution")
+    save_plot("{}_class_distribution".format(config.dataset))
     plt.show()
 
 

@@ -9,6 +9,8 @@ fontsizes = {
     'axis': 14,
     'ticks': 11
 }
+binary_labels = ["background", "seal"]
+multi_labels = ["background", "whitecoat", "moulted pup", "dead pup", "juvenile"]
 
 # Variables set by command line arguments/flags
 section = "data_vis"    # The section of the code to run.
