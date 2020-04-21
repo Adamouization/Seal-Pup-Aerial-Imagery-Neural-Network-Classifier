@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from pyspin.spin import Box1, make_spin
 import seaborn as sns
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix
@@ -29,25 +30,27 @@ class Classifier:
         elif model == "svc_lin":
             self.clf = LinearSVC(**kwargs, max_iter=1000, tol=1e-3)
         elif model == "svc_poly":
-            self.clf = SVC(**kwargs, kernel='poly', degree=2)
+            self.clf = SVC(**kwargs, kernel='poly', degree=2, max_iter=1000)
         elif model == "dt":
             self.clf = DecisionTreeClassifier(**kwargs, max_depth=5)
         elif model == "mlp":
             self.clf = MLPClassifier(**kwargs, hidden_layer_sizes=(15,), learning_rate_init=1, momentum=0.1,
                                      verbose=config.verbose_mode)
 
+    @make_spin(Box1, "Fitting {}...".format(get_classifier_name(config.model)))
     def fit_classifier(self):
         self.clf.fit(self.X, self.y)
 
+    @make_spin(Box1, "Performing k-fold cross validation...")
     def k_fold_cross_validation(self, folds=3):
         clf_accuracy_predictions = cross_val_predict(self.clf, self.X, self.y, cv=folds)
-
-        accuracy = accuracy_score(self.ground_truth, clf_accuracy_predictions)
-        print("Average accuracy over {} folds: {}%".format(folds, round(accuracy * 100, 2)))
 
         cm = confusion_matrix(self.ground_truth, clf_accuracy_predictions)
         _plot_pretty_confusion_matrix(cm, ["Background", "Seal"], False)
         _plot_pretty_confusion_matrix(cm, ["Background", "Seal"], True)
+
+        accuracy = accuracy_score(self.ground_truth, clf_accuracy_predictions)
+        print("Average accuracy over {} folds: {}%".format(folds, round(accuracy * 100, 2)))
 
 
 def _plot_pretty_confusion_matrix(cm, labels: list, is_normalised: bool) -> None:

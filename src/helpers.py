@@ -19,7 +19,7 @@ def print_runtime(runtime: float) -> None:
     :param runtime: the runtime
     :return: None
     """
-    print("\n--- Runtime: {} seconds ---".format(runtime))
+    print("\n--- Training Runtime: {} seconds ---".format(runtime))
 
 
 def save_plot(title):
@@ -45,27 +45,12 @@ def load_model(model_type):
     return joblib.load("trained_classifiers/{}.pkl".format(model_type))
 
 
-def print_classifier_name(model):
-    classifier_name = str()
-    if model == "sgd":
-        classifier_name = "Stochastic Gradient Descent"
-    elif model == "logistic":
-        classifier_name = "Logistic Regression"
-    elif model == "svc_lin":
-        classifier_name = "Linear Support Vector Machine Classifier"
-    elif model == "svc_poly":
-        classifier_name = "Polynomial (2nd degree) Support Vector Machine Classifier"
-    else:
-        print_error_message()
-    print("Classifier: {}\n".format(classifier_name))
-
-
 def get_classifier_name(model):
     if model == "sgd":
         return "Stochastic Gradient Descent Classifier"
     elif model == "logistic":
         return "Logistic Regression"
     elif model == "svc_lin":
-        return "Linear Support Vector Machine Classifier"
+        return "Linear SVM Classifier"
     elif model == "svc_poly":
-        return "Polynomial (2nd degree) Support Vector Machine Classifier"
+        return "Polynomial (2nd degree) SVM Classifier"

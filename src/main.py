@@ -2,10 +2,11 @@ import argparse
 import time
 
 import numpy as np
+from pyspin.spin import Box1, make_spin
 
 from src.classifiers import Classifier
 from src.data_vis import *
-from src.helpers import print_classifier_name, print_error_message, print_runtime
+from src.helpers import print_error_message, print_runtime
 
 
 def main() -> None:
@@ -18,15 +19,7 @@ def main() -> None:
     if config.verbose_mode:
         print("Verbose mode: ON\n")
 
-    # Load data.
-    if config.dataset == "binary":
-        X_train = pd.read_csv("../data/binary/X_train.csv", header=None)
-        y_train = pd.read_csv("../data/binary/Y_train.csv", header=None)
-    elif config.dataset == "multi":
-        X_train = pd.read_csv("../data/multi/X_train.csv", header=None)
-        y_train = pd.read_csv("../data/multi/Y_train.csv", header=None)
-    else:
-        print_error_message()
+    X_train, y_train = load_data(config.dataset)
 
     # Split training dataset's features:
     #   first 900 columns = HoG extracted from the image (10×10 px cells, 9 orientations, 2×2 blocks).
@@ -62,7 +55,7 @@ def main() -> None:
     pass
 
 
-def parse_command_line_arguments():
+def parse_command_line_arguments() -> None:
     """
     Parse command line arguments and save them in config.py.
     :return: None
@@ -99,6 +92,13 @@ def parse_command_line_arguments():
     config.verbose_mode = args.verbose
 
 
+@make_spin(Box1, "Loading data into memory...")
+def load_data(dataset):
+    X_train = pd.read_csv("../data/{}/X_train.csv".format(dataset), header=None)
+    y_train = pd.read_csv("../data/{}/Y_train.csv".format(dataset), header=None)
+    return X_train, y_train
+
+
 def input_preparation(X_train, y_train):
     # Convert class ID output to boolean integer format for logistic regression:
     #   1 if it's a "seal", 0 if it's a "background").
@@ -111,7 +111,6 @@ def input_preparation(X_train, y_train):
 
 
 def train_classification_models(X, y, ground_truth):
-    print_classifier_name(config.model)
     # Start recording time.
     start_time = time.time()
 

@@ -9,6 +9,7 @@ cycler==0.10.0
 decorator==4.4.2
 defusedxml==0.6.0
 entrypoints==0.3
+futures==3.1.1
 idna==2.9
 importlib-metadata==1.6.0
 ipykernel==5.2.1
@@ -50,6 +51,7 @@ py==1.8.1
 Pygments==2.6.1
 pyparsing==2.4.7
 pyrsistent==0.16.0
+pyspin==1.1.1
 pytest==5.2.1
 python-dateutil==2.8.1
 pytz==2019.3
