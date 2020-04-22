@@ -76,14 +76,15 @@ class Classifier:
             avg_param = "weighted"
             cm_labels = ["Background", "Dead Pups", "Juvenile", "Moulted Pup", "Whitecoat"]
 
-        precision = precision_score(self.ground_truth, self.predictions, average=avg_param)
-        print("Precision: " + str(precision))
-        recall = recall_score(self.ground_truth, self.predictions, average=avg_param)
-        print("Recall: " + str(recall))
-        f1 = f1_score(self.ground_truth, self.predictions, average=avg_param)
-        print("F1: " + str(f1))
-        scores_report = classification_report(self.ground_truth, self.predictions)
-        print(scores_report)
+        precision = round(precision_score(self.ground_truth, self.predictions, average=avg_param), 4)
+        recall = round(recall_score(self.ground_truth, self.predictions, average=avg_param), 4)
+        f1 = round(f1_score(self.ground_truth, self.predictions, average=avg_param), 4)
+        scores_df = pd.DataFrame(np.array([[precision, recall, f1]]), columns=["precision", "recall", "f1"])
+        print(scores_df)
+
+        if config.verbose_mode:
+            scores_report = classification_report(self.ground_truth, self.predictions)
+            print(scores_report)
 
         cm = confusion_matrix(self.ground_truth, self.predictions)
         _plot_pretty_confusion_matrix(cm, cm_labels, False)
