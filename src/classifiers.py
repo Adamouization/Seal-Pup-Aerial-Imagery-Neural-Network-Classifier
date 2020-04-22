@@ -28,8 +28,9 @@ class Classifier:
 
         # Load previously trained model.
         if is_trained_model_exists(config.dataset, config.model):
+            print("Loaded previously trained classifier.")
             self.clf = load_model(config.dataset, config.model)
-        # Create new sklearn model instance to fit.
+        # Create new sklearn model instance and fit it.
         else:
             if model == "sgd":
                 self.clf = SGDClassifier(**kwargs, max_iter=1000, tol=1e-3)
@@ -44,6 +45,10 @@ class Classifier:
             elif model == "mlp":
                 self.clf = MLPClassifier(**kwargs, hidden_layer_sizes=(15,), learning_rate_init=1, momentum=0.1,
                                          verbose=config.verbose_mode)
+            self.fit_classifier()
+
+        self.k_fold_cross_validation()
+        self.evaluate_classifier()
 
     @make_spin(Box1, "Fitting {}...".format(get_classifier_name(config.model)))
     def fit_classifier(self):

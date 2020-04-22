@@ -123,12 +123,7 @@ def train_classification_models(X, y, ground_truth):
     start_time = time.time()
 
     # Create classifier model instance.
-    clf = Classifier(config.model, X, y, ground_truth)
-
-    # Training pipeline.
-    clf.fit_classifier()
-    clf.k_fold_cross_validation()
-    clf.evaluate_classifier()
+    Classifier(config.model, X, y, ground_truth)
 
     # Print training runtime.
     print_runtime(round(time.time() - start_time, 2))

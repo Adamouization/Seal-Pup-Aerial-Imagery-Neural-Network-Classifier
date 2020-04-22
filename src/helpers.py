@@ -58,6 +58,7 @@ def get_classifier_name(model):
 
 
 def is_trained_model_exists(dataset, model_type):
-    if os.path.isfile("../trained_classifiers/{}_{}.pkl".format(dataset, model_type)):
+    path = "../trained_classifiers/{}_{}.pkl".format(dataset, model_type)
+    if os.path.isfile(path) and os.path.getsize(path) > 0:
         return True
     return False
