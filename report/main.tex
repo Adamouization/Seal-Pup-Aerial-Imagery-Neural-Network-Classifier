@@ -1,0 +1,182 @@
+% LaTeX template for reports
+% Author: Adam Jaamour
+% Last updated: 13/04/2020
+
+% ------------------- IMPORTS -------------------
+\documentclass[letterpaper,12pt]{article}
+\usepackage{tabularx} % extra features for tabular environment
+\usepackage{amsmath}  % improve maths presentation
+\usepackage{amssymb} % maths symbols
+\usepackage{graphicx} % takes care of graphic including machinery
+\usepackage[margin=0.95in,letterpaper]{geometry} % decreases margins
+\usepackage{cite} % takes care of citations
+\usepackage[titletoc,title]{appendix} % takes care of appendices
+\usepackage{listings} % code representation
+\usepackage{pdflscape}
+\usepackage{csquotes} % for quoting existing work
+\usepackage{color} % defines colours for code listings
+\usepackage{comment} % allows for block of comments
+\usepackage{gensymb} % degree symbol
+\usepackage[table,xcdraw]{xcolor} % table colouring
+\usepackage[cc]{titlepic}  % allows a pic to be included in the title page
+\usepackage[final]{hyperref} % adds hyper links inside the generated pdf file
+\usepackage{pdfpages} % include pdfs
+
+% ------------------- CODING STYLE -------------------
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=4
+}
+\lstset{style=mystyle}
+
+% ------------------- HEADINGS -------------------
+
+\begin{document}
+
+\title{
+    CS5014 Machine Learning\\Practical 2 Report\\
+    \begin{large}
+    University of St Andrews - School of Computer Science
+    \end{large}
+}
+\titlepic{\includegraphics[width=0.3\linewidth]{figures/st-andrews-logo.jpeg}}
+\author{Student ID: 150014151}
+\date{1st May, 2020}
+\maketitle
+\newpage
+
+\tableofcontents
+\newpage
+
+% ------------------- INTRODUCTION --------------------
+
+\section{Introduction}
+\label{sec:introduction}
+
+Todo\\
+
+Content-Based Video Retrieval for Pattern Matching Video Clips \cite{Jaamour2019}.
+
+% ------------------- PART 2: XXXX --------------------
+
+\section{System Architecture}
+\label{sec:system-architecture}
+
+\subsection{Project structure}
+
+todo
+
+\subsection{Execution flow}
+
+todo
+% ------------------- PART 3: XXXX --------------------
+
+\section{Methodology \& Design decisions}
+\label{sec:methodology-design}
+
+\subsection{Data loading}
+
+The three provided datasets are directly loaded into distinct Pandas DataFrames\footnote{Pandas DataFrames: \url{https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html}}  by using the \textit{read\_csv} function. However, this method takes a long time due to the file size (X\_train.csv is 1.5GB large). To speed this up, the DataFrames are serialised and saved using Pickle files, boosting the loading times to X second.
+
+\subsection{Data visualisation \& Analysis}
+
+(note: takes ~78s to run)
+
+\subsubsection{Classes distribution}
+
+unbalanced dataset in binary and multi, which have  a large impact on  the scoring method chosen (more in  future sections).
+
+\subsubsection{Correlation}
+
+3 sets of features in the data: HoG, RGB, ND
+HoG and RGB are important, ND is not (no correlation)
+
+\subsubsection{HoG features}
+
+HoG features reconstructed into images
+
+\subsubsection{RGB colour histograms}
+
+for a single image and aggregate of all images in training set
+
+\subsection{Input preparation}
+
+standardise: show how different the  scales are (min  and max?)
+PCA
+
+show effects of PCA (elbow graph, times, sizes)
+
+\subsection{Fitting}
+
+\subsubsection{Performance metrics}
+
+todo
+
+\subsubsection{K-fold cross validation}
+
+todo
+
+\subsection{Classification models}
+
+SVC and logistic regression  don't natively work with multilabel classification, whereas SGD does.
+
+\subsection{Model fine-tuning}
+
+todo
+
+\subsubsection{Training  execution flow}
+
+todo
+
+% ------------------- CONCLUSION --------------------
+
+\section{Evaluation \& Critical discussion}
+\label{sec:evaluation}
+
+\subsection{Selecting the best classifier}
+
+todo
+
+\subsection{Final test}
+
+todo
+
+\subsection{Critical discussion}
+
+
+% -------------------- APPENDIX --------------------
+
+\begin{appendices}
+
+\clearpage
+
+\bibliographystyle{plain}
+\bibliography{bibliography}
+
+% --------------------
+
+\clearpage
+\section{Test}
+\label{sec:appendix-demo-figure}
+
+test
+
+% ------------------------
+
+\end{appendices}
+\end{document}
