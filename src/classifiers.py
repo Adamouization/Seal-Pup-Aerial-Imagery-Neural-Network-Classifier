@@ -12,7 +12,7 @@ from sklearn.svm import LinearSVC, SVC
 from sklearn.tree import DecisionTreeClassifier
 
 import src.config as config
-from src.helpers import get_classifier_name, is_trained_model_exists, load_model, save_model, save_plot
+from src.helpers import get_classifier_name, is_file_exists, load_model, save_model, save_plot
 
 kwargs = {"random_state": config.RANDOM_SEED}
 
@@ -27,7 +27,7 @@ class Classifier:
         self.predictions = None
 
         # Load previously trained model.
-        if is_trained_model_exists(config.dataset, config.model):
+        if is_file_exists("../trained_classifiers/{}_{}.pkl".format(config.dataset, config.model)):
             print("Loaded previously trained classifier.")
             self.clf = load_model(config.dataset, config.model)
         # Create new sklearn model instance and fit it.

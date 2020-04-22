@@ -2,6 +2,7 @@ import joblib
 import os
 
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 def print_error_message():
@@ -57,8 +58,18 @@ def get_classifier_name(model):
         return "Polynomial (^2) SVM Classifier"
 
 
-def is_trained_model_exists(dataset, model_type):
-    path = "../trained_classifiers/{}_{}.pkl".format(dataset, model_type)
-    if os.path.isfile(path) and os.path.getsize(path) > 0:
+def is_file_exists(filepath):
+    """
+    Checks that the file exists and that it is not empty (more than 0 bytes).
+    :param filepath:
+    :return:
+    """
+    if os.path.isfile(filepath) and os.path.getsize(filepath) > 0:
         return True
     return False
+
+
+def save_df_to_pickle(X_train_df, y_train_df, dataset):
+    pd.to_pickle(X_train_df, "../data/{}/X_train.pkl".format(dataset))
+    pd.to_pickle(y_train_df, "../data/{}/y_train.pkl".format(dataset))
+    print("Saved DFs in PKL format.")

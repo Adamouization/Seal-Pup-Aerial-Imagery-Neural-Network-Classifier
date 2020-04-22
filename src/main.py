@@ -6,7 +6,7 @@ from pyspin.spin import Box1, make_spin
 
 from src.classifiers import Classifier
 from src.data_vis import *
-from src.helpers import print_error_message, print_runtime
+from src.helpers import is_file_exists, print_error_message, print_runtime, save_df_to_pickle
 
 
 def main() -> None:
@@ -21,6 +21,9 @@ def main() -> None:
 
     X_train, y_train = load_data(config.dataset)
 
+    # Run this once to save the CSV files imported into DFs in PKL format for quicker loading times.
+    # save_df_to_pickle(X_train, y_train, config.dataset)
+
     # Split training dataset's features:
     #   first 900 columns = HoG extracted from the image (10×10 px cells, 9 orientations, 2×2 blocks).
     #   next 16 columns drawn from a normal distribution (µ = 0.5, σ = 2)
@@ -29,6 +32,7 @@ def main() -> None:
     X_train_normal_dist = X_train.iloc[:, 900:916]
     X_train_colour_hists = X_train.iloc[:, 916:]
 
+    # Visualise data.
     if config.section == "data_vis":
         # Start recording time.
         start_time = time.time()
@@ -41,6 +45,7 @@ def main() -> None:
         # Print training runtime.
         print_runtime(round(time.time() - start_time, 2))
 
+    # Train or test classification models.
     elif config.section == "train" or config.section == "test":
         X, y, ground_truth = input_preparation(X_train, y_train)
         if config.section == "train":
@@ -96,8 +101,17 @@ def parse_command_line_arguments() -> None:
 
 @make_spin(Box1, "Loading data into memory...")
 def load_data(dataset):
-    X_train = pd.read_csv("../data/{}/X_train.csv".format(dataset), header=None)
-    y_train = pd.read_csv("../data/{}/Y_train.csv".format(dataset), header=None)
+    # If PKL format already exists for the data, load it for quicker loading times
+    #   (generate it by uncommenting the call to save_df_to_pickle).
+    if is_file_exists("../data/{}/X_train.pkl".format(dataset)):
+        X_train = pd.read_pickle("../data/{}/X_train.pkl".format(dataset))
+        y_train = pd.read_pickle("../data/{}/y_train.pkl".format(dataset))
+        print("\nData loaded from 'X_train.pkl' and 'y_train.pkl'")
+    # If PKL format not found, loads CSV file into memory (slower loadings times).
+    else:
+        X_train = pd.read_csv("../data/{}/X_train.csv".format(dataset), header=None)
+        y_train = pd.read_csv("../data/{}/Y_train.csv".format(dataset), header=None)
+        print("\nData loaded from 'X_train.csv' and 'y_train.csv'")
     return X_train, y_train
 
 
