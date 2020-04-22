@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="data_vis verbose binary" type="PythonConfigurationType" factoryName="Python" folderName="binary">
+  <configuration default="false" name="data_vis binary verbose" type="PythonConfigurationType" factoryName="Python" folderName="binary">
     <output_file path="$PROJECT_DIR$/logs/binary/data_vis_verbose.log" is_save="true" />
     <module name="Seal-Pup-Aerial-Imagery-Classifier" />
     <option name="INTERPRETER_OPTIONS" value="" />

@@ -39,7 +39,7 @@ class Classifier:
             elif model == "svc_lin":
                 self.clf = LinearSVC(**kwargs, max_iter=1000, tol=1e-3)
             elif model == "svc_poly":
-                self.clf = SVC(**kwargs, kernel='poly', degree=2, max_iter=1000)
+                self.clf = SVC(**kwargs, kernel='poly', degree=2, max_iter=10000)
             elif model == "dt":
                 self.clf = DecisionTreeClassifier(**kwargs, max_depth=5)
             elif model == "mlp":
