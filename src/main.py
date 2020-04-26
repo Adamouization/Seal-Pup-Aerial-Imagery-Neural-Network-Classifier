@@ -28,6 +28,7 @@ def main() -> None:
         # Split training dataset's features in 3 distinct DFs.
         X_train_HoG, X_train_normal_dist, X_train_colour_hists = split_features(X_train)
         # Visualise data.
+        data_overview(X_train)
         visualise_hog(X_train_HoG)
         visualise_rgb_hist(X_train_colour_hists)
         visualise_class_distribution(y_train)

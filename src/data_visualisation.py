@@ -1,8 +1,14 @@
+import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import pandas as pd
 
 import src.config as config
 from src.helpers import save_plot
+
+
+def data_overview(dataset) -> None:
+    print(dataset.info())
+    print(dataset.describe())
 
 
 def visualise_hog(HoG) -> None:
@@ -14,91 +20,133 @@ def visualise_hog(HoG) -> None:
     if config.dataset == "binary":
         fig = plt.figure(figsize=(10, 10))
 
+        image_bg1 = mpimg.imread("../data/exampleImages/bg1.png")
+        fig.add_subplot(2, 3, 1)
+        plt.imshow(image_bg1, cmap="bone")
+        plt.title("actual background", fontsize=config.fontsizes['title'])
+        plt.axis("off")
+
         image_background1 = HoG.iloc[0].to_numpy().reshape(30, 30)
-        fig.add_subplot(221)
+        fig.add_subplot(2, 3, 2)
         plt.imshow(image_background1, cmap="bone")
-        plt.title("background", fontsize=config.fontsizes['title'])
+        plt.title("reconstructed background", fontsize=config.fontsizes['title'])
         plt.axis("off")
 
         image_background2 = HoG.iloc[1080].to_numpy().reshape(30, 30)
-        fig.add_subplot(222)
+        fig.add_subplot(2, 3, 3)
         plt.imshow(image_background2, cmap="bone")
-        plt.title("background", fontsize=config.fontsizes['title'])
+        plt.title("reconstructed background", fontsize=config.fontsizes['title'])
+        plt.axis("off")
+
+        image_whitecoat2 = mpimg.imread("../data/exampleImages/whitecoat2.png")
+        fig.add_subplot(2, 3, 4)
+        plt.imshow(image_whitecoat2, cmap="bone")
+        plt.title("actual background", fontsize=config.fontsizes['title'])
         plt.axis("off")
 
         image_seal1 = HoG.iloc[62209].to_numpy().reshape(30, 30)
-        fig.add_subplot(223)
+        fig.add_subplot(2, 3, 5)
         plt.imshow(image_seal1, cmap="bone")
-        plt.title("seal", fontsize=config.fontsizes['title'])
+        plt.title("reconstructed seal", fontsize=config.fontsizes['title'])
         plt.axis("off")
 
         image_seal2 = HoG.iloc[62100].to_numpy().reshape(30, 30)
-        fig.add_subplot(224)
+        fig.add_subplot(2, 3, 6)
         plt.imshow(image_seal2, cmap="bone")
-        plt.title("seal", fontsize=config.fontsizes['title'])
+        plt.title("reconstructed seal", fontsize=config.fontsizes['title'])
         plt.axis("off")
 
     elif config.dataset == "multi":
         fig = plt.figure(figsize=(20, 8))
 
         image_background1 = HoG.iloc[7778].to_numpy().reshape(30, 30)
-        fig.add_subplot(2, 5, 1)
+        fig.add_subplot(3, 5, 1)
         plt.imshow(image_background1, cmap="bone")
         plt.title("background", fontsize=config.fontsizes['title'])
         plt.axis("off")
 
         image_whitecoat1 = HoG.iloc[0].to_numpy().reshape(30, 30)
-        fig.add_subplot(2, 5, 2)
+        fig.add_subplot(3, 5, 2)
         plt.imshow(image_whitecoat1, cmap="bone")
         plt.title("whitecoat", fontsize=config.fontsizes['title'])
         plt.axis("off")
 
         image_moultedpup1 = HoG.iloc[4981].to_numpy().reshape(30, 30)
-        fig.add_subplot(2, 5, 3)
+        fig.add_subplot(3, 5, 3)
         plt.imshow(image_moultedpup1, cmap="bone")
         plt.title("moulted pup", fontsize=config.fontsizes['title'])
         plt.axis("off")
 
         image_deadpup1 = HoG.iloc[7253].to_numpy().reshape(30, 30)
-        fig.add_subplot(2, 5, 4)
+        fig.add_subplot(3, 5, 4)
         plt.imshow(image_deadpup1, cmap="bone")
         plt.title("dead pup", fontsize=config.fontsizes['title'])
         plt.axis("off")
 
         image_juvenile1 = HoG.iloc[7530].to_numpy().reshape(30, 30)
-        fig.add_subplot(2, 5, 5)
+        fig.add_subplot(3, 5, 5)
         plt.imshow(image_juvenile1, cmap="bone")
         plt.title("juvenile", fontsize=config.fontsizes['title'])
         plt.axis("off")
 
         image_background2 = HoG.iloc[62205].to_numpy().reshape(30, 30)
-        fig.add_subplot(2, 5, 6)
+        fig.add_subplot(3, 5, 6)
         plt.imshow(image_background2, cmap="bone")
         plt.title("background", fontsize=config.fontsizes['title'])
         plt.axis("off")
 
         image_whitecoat2 = HoG.iloc[4976].to_numpy().reshape(30, 30)
-        fig.add_subplot(2, 5, 7)
+        fig.add_subplot(3, 5, 7)
         plt.imshow(image_whitecoat2, cmap="bone")
         plt.title("whitecoat", fontsize=config.fontsizes['title'])
         plt.axis("off")
 
         image_moultedpup2 = HoG.iloc[7248].to_numpy().reshape(30, 30)
-        fig.add_subplot(2, 5, 8)
+        fig.add_subplot(3, 5, 8)
         plt.imshow(image_moultedpup2, cmap="bone")
         plt.title("moulted pup", fontsize=config.fontsizes['title'])
         plt.axis("off")
 
         image_deadpup2 = HoG.iloc[7529].to_numpy().reshape(30, 30)
-        fig.add_subplot(2, 5, 9)
+        fig.add_subplot(3, 5, 9)
         plt.imshow(image_deadpup2, cmap="bone")
         plt.title("dead pup", fontsize=config.fontsizes['title'])
         plt.axis("off")
 
         image_juvenile2 = HoG.iloc[7777].to_numpy().reshape(30, 30)
-        fig.add_subplot(2, 5, 10)
+        fig.add_subplot(3, 5, 10)
         plt.imshow(image_juvenile2, cmap="bone")
         plt.title("juvenile", fontsize=config.fontsizes['title'])
+        plt.axis("off")
+
+        image_bg1 = mpimg.imread("../data/exampleImages/bg1.png")
+        fig.add_subplot(3, 5, 11)
+        plt.imshow(image_bg1, cmap="bone")
+        plt.title("actual background", fontsize=config.fontsizes['title'])
+        plt.axis("off")
+
+        image_whitecoat1 = mpimg.imread("../data/exampleImages/whitecoat1.png")
+        fig.add_subplot(3, 5, 12)
+        plt.imshow(image_whitecoat1, cmap="bone")
+        plt.title("actual whitecoat", fontsize=config.fontsizes['title'])
+        plt.axis("off")
+
+        image_moultedpup1 = mpimg.imread("../data/exampleImages/moultedpup1.png")
+        fig.add_subplot(3, 5, 13)
+        plt.imshow(image_moultedpup1, cmap="bone")
+        plt.title("actual moulted pup", fontsize=config.fontsizes['title'])
+        plt.axis("off")
+
+        image_deadpup2 = mpimg.imread("../data/exampleImages/deadpup2.png")
+        fig.add_subplot(3, 5, 14)
+        plt.imshow(image_deadpup2, cmap="bone")
+        plt.title("actual dead pup", fontsize=config.fontsizes['title'])
+        plt.axis("off")
+
+        image_juvenile3 = mpimg.imread("../data/exampleImages/juvenile3.png")
+        fig.add_subplot(3, 5, 15)
+        plt.imshow(image_juvenile3, cmap="bone")
+        plt.title("actual juvenile", fontsize=config.fontsizes['title'])
         plt.axis("off")
 
     save_plot("reconstructed_images_{}".format(config.dataset))
@@ -245,7 +293,7 @@ def visualise_correlation(X, y):
         print("\n{} training set correlation matrix:".format(config.dataset))
         print(correlation_matrix)
 
-    print("10 features with the strongest positive correlation with the  output:")
+    print("10 features with the strongest positive correlation with the class labels:")
     print(correlation_matrix.iloc[963].sort_values(ascending=False).head(11))
-    print("\n10 features with the strongest negative correlation with the  output:")
-    print(correlation_matrix.iloc[963].sort_values(ascending=True).head(10))
+    print("\n10 features with the strongest negative correlation with the class labels:")
+    print(correlation_matrix.iloc[963].sort_values(ascending=True).head(11))
