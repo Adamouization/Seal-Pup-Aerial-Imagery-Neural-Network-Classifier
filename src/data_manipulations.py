@@ -40,12 +40,16 @@ def split_features(X_train):
 
 @make_spin(Box1, "Transforming features...")
 def input_preparation(X_train, variance=0.99):
-    # Standard scale inputs
-    std_scaler = StandardScaler()
-    X_train_scaled = std_scaler.fit_transform(X_train)
-    X_train_df = pd.DataFrame(X_train_scaled, columns=X_train.columns.values)
+    # Drop the normal distribution features (columns 900-916), only keep HoG and RGB histograms (0-900;916-964).
+    X_train_trimmed = pd.concat([X_train.iloc[:, :900], X_train.iloc[:, 916:]], axis=1)
 
-    pca = PCA(n_components=487)  # n_components is determined by running the code below.
+    # Standard scale inputs.
+    std_scaler = StandardScaler()
+    X_train_scaled = std_scaler.fit_transform(X_train_trimmed)
+    X_train_df = pd.DataFrame(X_train_scaled, columns=X_train_trimmed.columns.values)
+
+    # Apply PCA reduction.
+    pca = PCA(n_components=475)  # n_components is determined by running the code below (487 with all features).
     X_train_reduced = pca.fit_transform(X_train_df)
 
     if config.verbose_mode:
@@ -65,7 +69,7 @@ def input_preparation(X_train, variance=0.99):
         # source: https://github.com/ageron/handson-ml2/blob/master/08_dimensionality_reduction.ipynb
         plt.figure(figsize=(6, 4))
         plt.plot(cumsum, linewidth=2, color="green")
-        plt.axis([0, 964, 0, 1])
+        plt.axis([0, X_train_trimmed.shape[1], 0, 1])  # X_train_trimmed.shape[1] is the number of dimensions (features)
         plt.xlabel("Dimensions")
         plt.ylabel("Explained Variance")
         plt.plot([d, d], [0, variance], "k:", color="green", alpha=0.5)
