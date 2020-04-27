@@ -1,0 +1,21 @@
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[h]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+\textbf{Model} & \multicolumn{2}{c|}{\textbf{SGD}} & \multicolumn{2}{c|}{\textbf{Logistic (OvR)}} & \multicolumn{2}{c|}{\textbf{Linear SVC*}} & \multicolumn{2}{c|}{\textbf{Polynomial SVC}} & \multicolumn{2}{c|}{\textbf{Decision Tree*}} & \multicolumn{2}{c|}{\textbf{Neural Network*}} \\ \hline
+\textbf{Dataset} & \textbf{Binary} & \textbf{Multi} & \textbf{Binary} & \textbf{Multi} & \textbf{Binary} & \textbf{Multi} & \textbf{Binary} & \textbf{Multi} & \textbf{Binary} & \textbf{Multi} & \textbf{Binary} & \textbf{Multi} \\ \hline
+\textbf{Accuracy} & 95.88\% & 93.02\% & 96.62\% & 93.95\% & 95.89\% & 93.67\% & 31.58\% & N/A & 92.58\% & 88.49\% & 93.59\% & 91.85\% \\ \hline
+\textbf{Precision} & 87.42\% & 91.41\% & 91.14\% & 93.26\% & 87.22\% & 92.42\% & 14.96\% & N/A & 70.63\% & 88.79\% & 75.98\% & 90.63\% \\ \hline
+\textbf{Recall} & 78.27\% & 93.02\% & 80.86\% & 93.95\% & 78.70\% & 93.67\% & 95.46\% & N/A & 69.59\% & 88.49\% & 71.28\% & 91.86\% \\ \hline
+\textbf{F1 score} & 82.59\% & 91.69\% & 85.69\% & 93.50\% & 82.74\% & 92.71\% & 25.87\% & N/A & 70.11\% & 88.64\% & 73.55\% & 90.80\% \\ \hline
+\textbf{\begin{tabular}[c]{@{}c@{}}Runtime \\ (seconds)\end{tabular}} & 70.28 & 294.35 & 104.41 & 136.55 & 160.09 & 656.8 & 252.95 & N/A & 442.02 & 540.11 & 13.58 & 187.61 \\ \hline
+\textbf{\begin{tabular}[c]{@{}c@{}}Max \#\\ iterations\end{tabular}} & 10,000 & 10,000 & 100 & 100 & 1,000 & 1,000 & 1,000 & 10,000 & ∞ & ∞ & 100 & 100 \\ \hline
+\textbf{\begin{tabular}[c]{@{}c@{}}Convergence\\ warnings\end{tabular}} & No & Yes & Yes & Yes & Yes & Yes & Yes & Too long & No & No & No & Yes \\ \hline
+\end{tabular}%
+}
+\caption{Initial}
+\label{tab:my-table}
+\end{table}
