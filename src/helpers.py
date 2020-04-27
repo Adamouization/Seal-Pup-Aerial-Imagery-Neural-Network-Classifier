@@ -56,6 +56,10 @@ def get_classifier_name(model):
         return "Linear SVM Classifier"
     elif model == "svc_poly":
         return "Polynomial (^2) SVM Classifier"
+    elif model == "dt":
+        return "Decision Tree"
+    elif model == "mlp":
+        return "Neural Network"
 
 
 def is_file_exists(filepath):

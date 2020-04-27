@@ -14,7 +14,9 @@ from sklearn.tree import DecisionTreeClassifier
 import src.config as config
 from src.helpers import get_classifier_name, is_file_exists, load_model, save_model, save_plot
 
-kwargs = {"random_state": config.RANDOM_SEED}
+kwargs = {
+    "random_state": config.RANDOM_SEED
+}
 
 
 class Classifier:
@@ -33,18 +35,23 @@ class Classifier:
         # Create new sklearn model instance and fit it.
         else:
             if model == "sgd":
-                self.clf = SGDClassifier(**kwargs, max_iter=1000, tol=1e-3)
+                self.clf = SGDClassifier(**kwargs, penalty="l2", fit_intercept=True, max_iter=10000, tol=1e-3,
+                                         n_jobs=-1)
             elif model == "logistic":
-                self.clf = LogisticRegression(**kwargs, max_iter=1000, tol=1e-3)
+                self.clf = LogisticRegression(**kwargs, solver="liblinear", penalty="l2", fit_intercept=True,
+                                              max_iter=100, tol=1e-4, n_jobs=-1)  # Uses OvR
             elif model == "svc_lin":
-                self.clf = LinearSVC(**kwargs, max_iter=1000, tol=1e-3)
+                self.clf = LinearSVC(**kwargs, multi_class="ovr", penalty="l2", fit_intercept=True, max_iter=1000,
+                                     tol=1e-4)
             elif model == "svc_poly":
-                self.clf = SVC(**kwargs, kernel='poly', degree=2, max_iter=10000)
+                self.clf = SVC(**kwargs, kernel='poly', degree=3, decision_function_shape="ovr", max_iter=1000,
+                               tol=1e-3)
             elif model == "dt":
-                self.clf = DecisionTreeClassifier(**kwargs, max_depth=5)
+                self.clf = DecisionTreeClassifier(**kwargs, criterion="gini", splitter="best")
             elif model == "mlp":
-                self.clf = MLPClassifier(**kwargs, hidden_layer_sizes=(15,), learning_rate_init=1, momentum=0.1,
-                                         verbose=config.verbose_mode)
+                self.clf = MLPClassifier(**kwargs, hidden_layer_sizes=(100,), activation="relu", solver="adam",
+                                         learning_rate="constant", learning_rate_init=0.6, momentum=0.9,
+                                         max_iter=100, tol=1e-5, n_iter_no_change=15, verbose=config.verbose_mode)
             self.fit_classifier()
 
         self.k_fold_cross_validation()
@@ -94,10 +101,12 @@ class Classifier:
 def _plot_pretty_confusion_matrix(cm, labels: list, is_normalised: bool) -> None:
     annot_format = "d"
     title = "{} data - {} Confusion matrix".format(config.dataset, get_classifier_name(config.model))
+
     if is_normalised:
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
         annot_format = ".2f"
         title += " (normalised)"
+
     cm_df = pd.DataFrame(cm, index=labels, columns=labels)
     fig = plt.figure(figsize=(8, 5))
     heatmap = sns.heatmap(cm_df, cmap="YlGnBu", annot=True, fmt=annot_format)
@@ -112,5 +121,9 @@ def _plot_pretty_confusion_matrix(cm, labels: list, is_normalised: bool) -> None
     plt.ylabel('True label', fontsize=config.fontsizes['axis'])
     plt.xlabel('Predicted label', fontsize=config.fontsizes['axis'])
     plt.title(title, fontsize=config.fontsizes['title'])
-    save_plot("{}_{}_class_distribution".format(config.dataset, config.model))
+
+    if is_normalised:
+        save_plot("{}_{}_class_distribution_normalised".format(config.dataset, config.model))
+    else:
+        save_plot("{}_{}_class_distribution".format(config.dataset, config.model))
     plt.show()
