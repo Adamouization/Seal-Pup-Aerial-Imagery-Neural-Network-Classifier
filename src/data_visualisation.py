@@ -7,11 +7,21 @@ from src.helpers import save_plot
 
 
 def data_overview(dataset) -> None:
+    """
+
+    :param dataset:
+    :return:
+    """
     print(dataset.info())
     print(dataset.describe())
 
 
 def visualise_hog(HoG) -> None:
+    """
+
+    :param HoG:
+    :return:
+    """
     if config.verbose_mode:
         print("\n{} training set HoG features:".format(config.dataset))
         print(HoG.head(5))
@@ -153,7 +163,12 @@ def visualise_hog(HoG) -> None:
     plt.show()
 
 
-def visualise_rgb_hist(RGB_hist):
+def visualise_rgb_hist(RGB_hist) -> None:
+    """
+
+    :param RGB_hist:
+    :return:
+    """
     if config.verbose_mode:
         print("\n{} training set RGB Histogram features:".format(config.dataset))
         print(RGB_hist.shape)
@@ -202,7 +217,12 @@ def visualise_rgb_hist(RGB_hist):
     plt.show()
 
 
-def visualise_class_distribution(outputs):
+def visualise_class_distribution(outputs) -> None:
+    """
+
+    :param outputs:
+    :return:
+    """
     if config.verbose_mode:
         print("\n{} training set class distribution:".format(config.dataset))
         outputs.info()
@@ -285,7 +305,7 @@ def visualise_class_distribution(outputs):
     plt.show()
 
 
-def visualise_correlation(X, y):
+def visualise_correlation(X, y) -> None:
     temp_data = pd.concat([X, y], axis=1)
     correlation_matrix = temp_data.corr()
 

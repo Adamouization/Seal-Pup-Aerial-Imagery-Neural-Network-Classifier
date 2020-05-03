@@ -39,7 +39,7 @@ def split_features(X_train):
 
 
 @make_spin(Box1, "Transforming features...")
-def input_preparation(X_train, variance=0.99):
+def input_preparation(X_train, variance: float = 0.99):
     # Drop the normal distribution features (columns 900-916), only keep HoG and RGB histograms (0-900;916-964).
     X_train_trimmed = pd.concat([X_train.iloc[:, :900], X_train.iloc[:, 916:]], axis=1)
 

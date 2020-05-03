@@ -90,7 +90,14 @@ def parse_command_line_arguments() -> None:
     config.verbose_mode = args.verbose
 
 
-def train_classification_models(X, y, ground_truth):
+def train_classification_models(X, y, ground_truth) -> None:
+    """
+
+    :param X:
+    :param y:
+    :param ground_truth:
+    :return:
+    """
     # Start recording time.
     start_time = time.time()
 

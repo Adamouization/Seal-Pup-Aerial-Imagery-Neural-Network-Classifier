@@ -20,8 +20,18 @@ kwargs = {
 
 
 class Classifier:
+    """
 
-    def __init__(self, model, X, y, ground_truth):
+    """
+
+    def __init__(self, model: str, X, y, ground_truth):
+        """
+
+        :param model:
+        :param X:
+        :param y:
+        :param ground_truth:
+        """
         self.X = X
         self.y = y
         self.ground_truth = ground_truth
@@ -58,19 +68,35 @@ class Classifier:
         self.evaluate_classifier()
 
     @make_spin(Box1, "Fitting {}...".format(get_classifier_name(config.model)))
-    def fit_classifier(self):
+    def fit_classifier(self) -> None:
+        """
+
+        :return:
+        """
         self.clf.fit(self.X, self.y)
         save_model(self.clf, config.dataset, config.model)
 
     @make_spin(Box1, "Making predictions...")
-    def single_prediction(self):
+    def single_prediction(self) -> None:
+        """
+
+        :return:
+        """
         self.predictions = self.clf.predict(self.X)
 
     @make_spin(Box1, "Performing k-fold cross validation...")
-    def k_fold_cross_validation(self):
+    def k_fold_cross_validation(self) -> None:
+        """
+
+        :return:
+        """
         self.predictions = cross_val_predict(self.clf, self.X, self.y, cv=self.folds)
 
-    def evaluate_classifier(self):
+    def evaluate_classifier(self) -> None:
+        """
+
+        :return:
+        """
         accuracy = accuracy_score(self.ground_truth, self.predictions)
         print("Average accuracy over {} folds: {}%".format(self.folds, round(accuracy * 100, 2)))
 
@@ -99,6 +125,13 @@ class Classifier:
 
 
 def _plot_pretty_confusion_matrix(cm, labels: list, is_normalised: bool) -> None:
+    """
+
+    :param cm:
+    :param labels:
+    :param is_normalised:
+    :return:
+    """
     annot_format = "d"
     title = "{} data - {} Confusion matrix".format(config.dataset, get_classifier_name(config.model))
 
