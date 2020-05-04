@@ -1,0 +1,20 @@
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[h]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{Model} & \textbf{SGD*} & \textbf{\begin{tabular}[c]{@{}c@{}}Logistic* \\ (OvR)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Linear \\ SVC\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Polynomial \\ SVC*\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Decision \\ Tree\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Neural \\ Network\end{tabular}} \\ \hline
+\textbf{Accuracy} & 95.88\% & 96.62\% & 95.89\% & 31.58\% & 92.58\% & 93.59\% \\ \hline
+\textbf{Precision} & 87.42\% & 91.14\% & 87.22\% & 14.96\% & 70.63\% & 75.98\% \\ \hline
+\textbf{Recall} & 78.27\% & 80.86\% & 78.70\% & 95.46\% & 69.59\% & 71.28\% \\ \hline
+\textbf{F1 score} & 82.59\% & 85.69\% & 82.74\% & 25.87\% & 70.11\% & 73.55\% \\ \hline
+\textbf{\begin{tabular}[c]{@{}r@{}}Runtime \\ (seconds)\end{tabular}} & 70.28 & 104.41 & 160.09 & 252.95 & 442.02 & 13.58 \\ \hline
+\textbf{\begin{tabular}[c]{@{}r@{}}Max \# \\ iterations\end{tabular}} & 10,000 & 100 & 1,000 & 1,000 & \infty & 100 \\ \hline
+\textbf{\begin{tabular}[c]{@{}r@{}}Convergence\\ warnings\end{tabular}} & No & Yes & Yes & Yes & No & No \\ \hline
+\end{tabular}%
+}
+\caption{Initial classification models evaluation using 3-fold cross validation on the binary dataset.\\ \textit{*Using all available processors for quicker runtimes.}}
+\label{tab:binary-classifiers}
+\end{table}

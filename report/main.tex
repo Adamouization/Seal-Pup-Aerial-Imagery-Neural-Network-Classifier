@@ -213,7 +213,7 @@ To determine which features show the highest correlation with the class labels, 
 
 \begin{figure}[h]
 \centering
-\begin{subfigure}{.47\textwidth}
+\begin{subfigure}{.49\textwidth}
   \centering
   \includegraphics[width=\textwidth]{report/figures/corr_pos.png}
   \label{fig:corr_pos}
@@ -283,7 +283,10 @@ At this point, the training data is ready to be fed into the classifiers. The cl
 
 According to A. Géron, an efficient approach to model selection is to try out multiple classifiers, with hyperparameters close to the default values recommended by Scikit-Learn. The goal of this method is to gain a high-level intuition of which classification models to further explore and tweak \cite{Geron2019}. todo: mention which were chosen.
 
-\input{report/table/table}
+\input{report/table/initial_binary_classifiers}
+\input{report/table/initial_multi_classifiers}
+
+% Initial classification models evaluation using 3-fold cross validation on the binary dataset.\\ \textit{*Using all available processors for quicker runtimes.}
 
 \subsubsection{Performance metrics}
 
@@ -316,7 +319,6 @@ todo
 
 \subsection{Final test}
 
-todo
 
 \subsection{Critical discussion}
 
