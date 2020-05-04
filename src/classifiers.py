@@ -6,7 +6,7 @@ import seaborn as sns
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score, precision_score, \
     recall_score
-from sklearn.model_selection import cross_val_predict
+from sklearn.model_selection import cross_val_predict, GridSearchCV
 from sklearn.neural_network import MLPClassifier
 from sklearn.svm import LinearSVC, SVC
 from sklearn.tree import DecisionTreeClassifier
@@ -21,16 +21,16 @@ kwargs = {
 
 class Classifier:
     """
-
+    Classifier class containing functions fit, evaluate and perform grid search.
     """
 
     def __init__(self, model: str, X, y, ground_truth):
         """
-
-        :param model:
-        :param X:
-        :param y:
-        :param ground_truth:
+        Initialise parameters.
+        :param model: string specifying which sklearn model to use.
+        :param X: processed data.
+        :param y: processed labels.
+        :param ground_truth: unprocessed labels.
         """
         self.X = X
         self.y = y
@@ -38,39 +38,47 @@ class Classifier:
         self.folds = 3
         self.predictions = None
 
-        # Load previously trained model.
-        if is_file_exists("../trained_classifiers/{}_{}.pkl".format(config.dataset, config.model)):
-            print("Loaded previously trained classifier.")
-            self.clf = load_model(config.dataset, config.model)
-        # Create new sklearn model instance and fit it.
-        else:
-            if model == "sgd":
-                self.clf = SGDClassifier(**kwargs, penalty="l2", fit_intercept=True, max_iter=10000, tol=1e-3,
-                                         n_jobs=-1)
-            elif model == "logistic":
-                self.clf = LogisticRegression(**kwargs, solver="liblinear", penalty="l2", fit_intercept=True,
-                                              max_iter=100, tol=1e-4, n_jobs=-1)  # Uses OvR
-            elif model == "svc_lin":
-                self.clf = LinearSVC(**kwargs, multi_class="ovr", penalty="l2", fit_intercept=True, max_iter=1000,
-                                     tol=1e-4)
-            elif model == "svc_poly":
-                self.clf = SVC(**kwargs, kernel='poly', degree=3, decision_function_shape="ovr", max_iter=1000,
-                               tol=1e-3)
-            elif model == "dt":
-                self.clf = DecisionTreeClassifier(**kwargs, criterion="gini", splitter="best")
-            elif model == "mlp":
-                self.clf = MLPClassifier(**kwargs, hidden_layer_sizes=(100,), activation="relu", solver="adam",
-                                         learning_rate="constant", learning_rate_init=0.6, momentum=0.9,
-                                         max_iter=100, tol=1e-5, n_iter_no_change=15, verbose=config.verbose_mode)
-            self.fit_classifier()
+        # Perform hyperparameter tuning (grid search) on the chosen model.
+        if config.is_grid_search:
+            self.clf = MLPClassifier(**kwargs, solver="adam", learning_rate="constant", verbose=config.verbose_mode)
+            self.grid_search()
 
-        self.k_fold_cross_validation()
-        self.evaluate_classifier()
+        # Fit, perform k-fold cross validation and evaluate a model.
+        else:
+            # Load previously trained model.
+            if is_file_exists("../trained_classifiers/{}_{}.pkl".format(config.dataset, config.model)):
+                print("Loaded previously trained classifier.")
+                self.clf = load_model(config.dataset, config.model)
+            # Create new sklearn model instance and fit it.
+            else:
+                if model == "mlp":
+                    self.clf = MLPClassifier(**kwargs, hidden_layer_sizes=(1000,), activation="relu", solver="adam",
+                                             learning_rate="constant", learning_rate_init=0.1, momentum=0.1,
+                                             verbose=config.verbose_mode)
+                elif model == "sgd":
+                    self.clf = SGDClassifier(**kwargs, penalty="l2", fit_intercept=True, max_iter=10000, tol=1e-3,
+                                             n_jobs=-1)
+                elif model == "logistic":
+                    self.clf = LogisticRegression(**kwargs, solver="liblinear", penalty="l2", fit_intercept=True,
+                                                  max_iter=100, tol=1e-4, n_jobs=-1)  # Uses OvR
+                elif model == "svc_lin":
+                    self.clf = LinearSVC(**kwargs, multi_class="ovr", penalty="l2", fit_intercept=True, max_iter=1000,
+                                         tol=1e-4)
+                elif model == "svc_poly":
+                    self.clf = SVC(**kwargs, kernel='poly', degree=3, decision_function_shape="ovr", max_iter=1000,
+                                   tol=1e-3)
+                elif model == "dt":
+                    self.clf = DecisionTreeClassifier(**kwargs, criterion="gini", splitter="best")
+                print("Fitting classifier.")
+                self.fit_classifier()
+
+            self.k_fold_cross_validation()
+            self.evaluate_classifier()
 
     @make_spin(Box1, "Fitting {}...".format(get_classifier_name(config.model)))
     def fit_classifier(self) -> None:
         """
-
+        Fit the classifier and save the model using Pickle.
         :return:
         """
         self.clf.fit(self.X, self.y)
@@ -79,23 +87,23 @@ class Classifier:
     @make_spin(Box1, "Making predictions...")
     def single_prediction(self) -> None:
         """
-
-        :return:
+        Make a prediction on the data.
+        :return: None.
         """
         self.predictions = self.clf.predict(self.X)
 
     @make_spin(Box1, "Performing k-fold cross validation...")
     def k_fold_cross_validation(self) -> None:
         """
-
-        :return:
+        Apply k-fold cross validation.
+        :return: None.
         """
         self.predictions = cross_val_predict(self.clf, self.X, self.y, cv=self.folds)
 
     def evaluate_classifier(self) -> None:
         """
-
-        :return:
+        Measure accuracy, precision, recall, f1-score and confusion matrix.
+        :return: None.
         """
         accuracy = accuracy_score(self.ground_truth, self.predictions)
         print("Average accuracy over {} folds: {}%".format(self.folds, round(accuracy * 100, 2)))
@@ -123,14 +131,52 @@ class Classifier:
         _plot_pretty_confusion_matrix(cm, cm_labels, False)
         _plot_pretty_confusion_matrix(cm, cm_labels, True)
 
+    @make_spin(Box1, "Performing grid search...")
+    def grid_search(self):
+        """
+        Perform grid search on the defined parameters and save the results in a CSV file.
+        :return: None.
+        """
+        parameters = {
+            'hidden_layer_sizes': [(100,), (475,), (1000,)],
+            'activation': ["relu", "tanh"],
+            'learning_rate_init': [0.1, 0.5, 1.0],
+            'momentum': [0.1, 0.5, 1.0]
+        }
+
+        scoring = str()
+        if config.dataset == "binary":
+            scoring = "f1"
+        elif config.dataset == "multi":
+            scoring = "f1_weighted"
+        gs = GridSearchCV(
+            param_grid=parameters,
+            estimator=self.clf,
+            cv=self.folds,
+            scoring=scoring
+        )
+        gs_results = gs.fit(self.X, self.y)
+        gs_results_df = pd.DataFrame(gs_results.cv_results_)
+        gs_results_df.to_csv("../results/grid_search/{}_{}_gs.csv".format(config.dataset, config.model))
+
+        # Top 5 hyperparameters found for Lasso Regression.
+        print("Top 5 hyperparameters combinations found:")
+        gs_results_df.sort_values(by=['rank_test_score']).head(5)
+
+        # Best model found by grid search algorithm for Lasso Regression.
+        final_model = gs_results.best_estimator_
+        print("\nBest model hyperparameters found by randomised search algorithm:")
+        print(final_model)
+        save_model(final_model, config.dataset, "multi_mlp_search_best")
+
 
 def _plot_pretty_confusion_matrix(cm, labels: list, is_normalised: bool) -> None:
     """
-
-    :param cm:
-    :param labels:
-    :param is_normalised:
-    :return:
+    Plot the confusion matrix using seaborn to prettify the matrix.
+    :param cm: the confusion matrix.
+    :param labels: the labels to print.
+    :param is_normalised: boolean to print a normalised or unnormalised matrix.
+    :return: None.
     """
     annot_format = "d"
     title = "{} data - {} Confusion matrix".format(config.dataset, get_classifier_name(config.model))

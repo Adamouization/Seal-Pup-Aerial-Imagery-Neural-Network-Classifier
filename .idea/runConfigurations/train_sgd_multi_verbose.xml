@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="train sgd multi verbose" type="PythonConfigurationType" factoryName="Python" folderName="multi">
-    <output_file path="$PROJECT_DIR$/logs/multi/train_sgd.log" is_save="true" />
+    <output_file path="$PROJECT_DIR$/logs/multi/train_sgd_verbose.log" is_save="true" />
     <module name="Seal-Pup-Aerial-Imagery-Classifier" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
