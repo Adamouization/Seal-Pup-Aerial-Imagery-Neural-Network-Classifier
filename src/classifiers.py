@@ -54,16 +54,17 @@ class Classifier:
                                              learning_rate="constant", learning_rate_init=0.0335, momentum=0.405,
                                              alpha=0.0884, verbose=config.verbose_mode)
                 elif config.dataset == "multi":
-                    # self.clf = MLPClassifier(**kwargs, hidden_layer_sizes=(68,), activation="relu", solver="adam",
-                    #                          learning_rate="constant", learning_rate_init=0.0485, momentum=0.8387,
-                    #                          alpha=0.8689, verbose=config.verbose_mode)
-                    self.clf = MLPClassifier(**kwargs, activation='relu', alpha=0.0001, batch_size='auto', beta_1=0.9,
-                                             beta_2=0.999, early_stopping=False, epsilon=1e-08,
-                                             hidden_layer_sizes=56, learning_rate='constant',
-                                             learning_rate_init=0.001, max_fun=15000, max_iter=200,
-                                             momentum=0.9, n_iter_no_change=10, nesterovs_momentum=True,
-                                             power_t=0.5, shuffle=True, solver='adam',
-                                             tol=0.0001, validation_fraction=0.1, verbose=False, warm_start=False)
+                    self.clf = MLPClassifier(**kwargs, hidden_layer_sizes=(68,), activation="relu", solver="adam",
+                                             learning_rate="constant", learning_rate_init=0.0485, momentum=0.8387,
+                                             alpha=0.8689, verbose=config.verbose_mode)
+                    # self.clf = MLPClassifier(**kwargs, activation='relu', alpha=0.05975594913801298, batch_size='auto',
+                    #                          beta_1=0.9, beta_2=0.999, early_stopping=False, epsilon=1e-08,
+                    #                          hidden_layer_sizes=90, learning_rate='constant',
+                    #                          learning_rate_init=0.00782864512795467, max_fun=15000,
+                    #                          max_iter=200, momentum=0.8084182016547918, n_iter_no_change=10,
+                    #                          nesterovs_momentum=True, power_t=0.5,
+                    #                          shuffle=True, solver='adam', tol=0.0001, validation_fraction=0.1,
+                    #                          verbose=False, warm_start=False)
             elif model == "sgd":
                 self.clf = SGDClassifier(**kwargs, penalty="l2", fit_intercept=True, max_iter=10000, tol=1e-3,
                                          n_jobs=-1)

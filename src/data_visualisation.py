@@ -8,9 +8,9 @@ from src.helpers import save_plot
 
 def data_overview(dataset) -> None:
     """
-
+    Call DataFrame overview functions.
     :param dataset:
-    :return:
+    :return: None.
     """
     print(dataset.info())
     print(dataset.describe())
@@ -18,9 +18,9 @@ def data_overview(dataset) -> None:
 
 def visualise_hog(HoG) -> None:
     """
-
+    Reshape the HoG features into
     :param HoG:
-    :return:
+    :return: None.
     """
     if config.verbose_mode:
         print("\n{} training set HoG features:".format(config.dataset))

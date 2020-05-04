@@ -25,6 +25,11 @@ def print_runtime(runtime: float) -> None:
 
 
 def save_plot(title: str) -> None:
+    """
+
+    :param title:
+    :return:
+    """
     plt.savefig("../results/{}.png".format(title), bbox_inches='tight')
 
 
@@ -38,6 +43,17 @@ def save_model(model, dataset, model_type: str) -> None:
     joblib.dump(model, "../trained_classifiers/{}_{}.pkl".format(dataset, model_type))
 
 
+def save_transformation_pipeline(transform, dataset, transform_type: str) -> None:
+    """
+    Function to save the model to a file.
+    :param transform:
+    :param dataset:
+    :param transform_type:
+    :return:
+    """
+    joblib.dump(transform, "../transform_pipeline/{}_{}.pkl".format(dataset, transform_type))
+
+
 def load_model(dataset, model_type: str):
     """
     Function to load model.
@@ -46,6 +62,16 @@ def load_model(dataset, model_type: str):
     :return:
     """
     return joblib.load("../trained_classifiers/{}_{}.pkl".format(dataset, model_type))
+
+
+def load_transformation_pipeline(dataset, transform_type: str):
+    """
+    Function to load model.
+    :param dataset:
+    :param model_type:
+    :return:
+    """
+    return joblib.load("../transform_pipeline/{}_{}.pkl".format(dataset, transform_type))
 
 
 def get_classifier_name(model: str):

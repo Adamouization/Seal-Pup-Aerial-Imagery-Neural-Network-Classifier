@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
 import src.config as config
-from src.helpers import is_file_exists, save_df_to_pickle, save_plot
+from src.helpers import is_file_exists, load_transformation_pipeline, save_df_to_pickle, save_plot, save_transformation_pipeline
 
 
 @make_spin(Box1, "Loading training data into memory...")
@@ -34,9 +34,8 @@ def load_training_data():
 @make_spin(Box1, "Loading testing data into memory...")
 def load_testing_data():
     """
-
-    :param dataset:
-    :return:
+    Load testing dataset.
+    :return: the testing dataset in a DF.
     """
     # If PKL format already exists for the data, load it for quicker loading times
     #   (generate it by uncommenting the call to save_df_to_pickle).
@@ -53,9 +52,9 @@ def load_testing_data():
 
 def split_features(X_train):
     """
-
-    :param X_train:
-    :return:
+    Split the HoG, Normal distribution and RGB histogram features.
+    :param X_train: all the features.
+    :return: 3 DFs, one for each type of feature.
     """
     # First 900 columns = HoG extracted from the image (10×10 px cells, 9 orientations, 2×2 blocks).
     X_train_HoG = X_train.iloc[:, :900]
@@ -101,9 +100,17 @@ def input_preparation(X_train, variance: float = 0.99):
     X_train_scaled = std_scaler.fit_transform(X_train_trimmed)
     X_train_df = pd.DataFrame(X_train_scaled, columns=X_train_trimmed.columns.values)
 
-    # Apply PCA reduction.
-    pca = PCA(n_components=475)  # n_components is determined by running the code below (487 with all features).
+    # Apply PCA projection.
+    number_dimensions = 0
+    if config.dataset == "binary":
+        number_dimensions = 492
+    elif config.dataset == "multi":
+        number_dimensions = 475
+    pca = PCA(n_components=number_dimensions)  # n_components is determined by running the code below.
     X_train_reduced = pca.fit_transform(X_train_df)
+
+    save_transformation_pipeline(std_scaler, config.dataset, "standard_scaler")
+    save_transformation_pipeline(pca, config.dataset, "pca")
 
     if config.verbose_mode:
         print("Dataset size before PCA: {}".format(X_train_df.shape))
@@ -139,6 +146,15 @@ def input_preparation(X_train, variance: float = 0.99):
     return X_train_reduced
 
 
+def test_data_preparation(X_test):
+    X_test_trimmed = pd.concat([X_test.iloc[:, :900], X_test.iloc[:, 916:]], axis=1)
+    std_scaler = load_transformation_pipeline(config.dataset, "standard_scaler")
+    X_train_scaled = std_scaler.transform(X_test_trimmed)
+    pca = load_transformation_pipeline(config.dataset, "pca")
+    X_train_reduced = pca.transform(X_train_scaled)
+    return X_train_reduced
+
+
 def output_preparation(y_train):
     """
     Prepare the labels for the classifiers.
@@ -156,5 +172,16 @@ def output_preparation(y_train):
     return y_train_unravelled, y_train
 
 
-def revert_binary_predictions(predictions):
-    return predictions
+def revert_binary_predictions(predictions) -> list:
+    """
+    Transforms predictions from numerical form to categorical form.
+    :param predictions: numerical form.
+    :return: categorical form.
+    """
+    predictions_transformed = list()
+    for p in predictions:
+        if p == 0:
+            predictions_transformed.append(config.binary_labels[0])
+        elif p == 1:
+            predictions_transformed.append(config.binary_labels[1])
+    return predictions_transformed

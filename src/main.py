@@ -1,8 +1,6 @@
 import argparse
 import time
 
-import pandas as pd
-
 from src.classifiers import Classifier
 from src.data_manipulations import *
 from src.data_visualisation import *
@@ -26,8 +24,7 @@ def main() -> None:
         # Run this once to save the CSV files imported into DFs in PKL format for quicker loading times.
         # save_df_to_pickle(X_test, config.dataset, "X_test")
 
-        X = input_preparation(X_test)
-        make_final_test_predictions(X)
+        make_final_test_predictions(X_test)
 
     # Explore and train the classifiers.
     else:
@@ -142,8 +139,14 @@ def make_final_test_predictions(X_test) -> None:
     :param X_test: the samples to predict.
     :return: None
     """
+    X_test = test_data_preparation(X_test)
+
     final_model = load_model(config.dataset, "mlp")
     predictions = final_model.predict(X_test)
+
+    if config.dataset == "binary":
+        predictions = revert_binary_predictions(predictions)
+
     predictions_df = pd.DataFrame(predictions, index=None, columns=None)
     predictions_df.to_csv("../data/{}/Y_test.csv".format(config.dataset), index=False, columns=None, header=False)
 
