@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="grid search MLP multi" type="PythonConfigurationType" factoryName="Python" folderName="tuning">
-    <output_file path="$PROJECT_DIR$/logs/multi/GS_MLP.log" is_save="true" />
+  <configuration default="false" name="randomised search MLP multi" type="PythonConfigurationType" factoryName="Python" folderName="tuning">
+    <output_file path="$PROJECT_DIR$/logs/multi/RS_MLP.log" is_save="true" />
     <module name="Seal-Pup-Aerial-Imagery-Classifier" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
@@ -14,7 +14,7 @@
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main.py" />
-    <option name="PARAMETERS" value="-s train -d multi -m mlp -gs" />
+    <option name="PARAMETERS" value="-s train -d multi -m mlp -rs" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />

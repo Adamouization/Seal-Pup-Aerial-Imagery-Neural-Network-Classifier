@@ -13,7 +13,7 @@ from sklearn.svm import LinearSVC, SVC
 from sklearn.tree import DecisionTreeClassifier
 
 import src.config as config
-from src.helpers import get_classifier_name, is_file_exists, load_model, save_model, save_plot
+from src.helpers import get_classifier_name, save_model, save_plot
 
 kwargs = {
     "random_state": config.RANDOM_SEED
@@ -41,38 +41,46 @@ class Classifier:
 
         # Perform hyperparameter tuning (grid search) on the chosen model.
         if config.is_grid_search or config.is_randomised_search:
-            self.clf = MLPClassifier(**kwargs, solver="adam", learning_rate="constant", activation="relu", verbose=config.verbose_mode)
+            self.clf = MLPClassifier(**kwargs, solver="adam", learning_rate="constant", activation="relu",
+                                     verbose=config.verbose_mode)
             self.hyperparameter_tuning()
 
         # Fit, perform k-fold cross validation and evaluate a model.
         else:
-            # Load previously trained model.
-            if is_file_exists("../trained_classifiers/{}_{}.pkl".format(config.dataset, config.model)):
-                print("Loaded previously trained classifier.")
-                self.clf = load_model(config.dataset, config.model)
-            # Create new sklearn model instance and fit it.
-            else:
-                if model == "mlp":
-                    self.clf = MLPClassifier(**kwargs, hidden_layer_sizes=(1000,), activation="relu", solver="adam",
-                                             learning_rate="constant", learning_rate_init=0.1, momentum=0.1,
-                                             verbose=config.verbose_mode)
-                elif model == "sgd":
-                    self.clf = SGDClassifier(**kwargs, penalty="l2", fit_intercept=True, max_iter=10000, tol=1e-3,
-                                             n_jobs=-1)
-                elif model == "logistic":
-                    self.clf = LogisticRegression(**kwargs, solver="liblinear", penalty="l2", fit_intercept=True,
-                                                  max_iter=100, tol=1e-4, n_jobs=-1)  # Uses OvR
-                elif model == "svc_lin":
-                    self.clf = LinearSVC(**kwargs, multi_class="ovr", penalty="l2", fit_intercept=True, max_iter=1000,
-                                         tol=1e-4)
-                elif model == "svc_poly":
-                    self.clf = SVC(**kwargs, kernel='poly', degree=3, decision_function_shape="ovr", max_iter=1000,
-                                   tol=1e-3)
-                elif model == "dt":
-                    self.clf = DecisionTreeClassifier(**kwargs, criterion="gini", splitter="best")
-                print("Fitting classifier.")
-                self.fit_classifier()
+            # Instantiate sklearn model.
+            if model == "mlp":  # Selected model
+                if config.dataset == "binary":
+                    self.clf = MLPClassifier(**kwargs, hidden_layer_sizes=(57,), activation="relu", solver="adam",
+                                             learning_rate="constant", learning_rate_init=0.0335, momentum=0.405,
+                                             alpha=0.0884, verbose=config.verbose_mode)
+                elif config.dataset == "multi":
+                    # self.clf = MLPClassifier(**kwargs, hidden_layer_sizes=(68,), activation="relu", solver="adam",
+                    #                          learning_rate="constant", learning_rate_init=0.0485, momentum=0.8387,
+                    #                          alpha=0.8689, verbose=config.verbose_mode)
+                    self.clf = MLPClassifier(**kwargs, activation='relu', alpha=0.0001, batch_size='auto', beta_1=0.9,
+                                             beta_2=0.999, early_stopping=False, epsilon=1e-08,
+                                             hidden_layer_sizes=56, learning_rate='constant',
+                                             learning_rate_init=0.001, max_fun=15000, max_iter=200,
+                                             momentum=0.9, n_iter_no_change=10, nesterovs_momentum=True,
+                                             power_t=0.5, shuffle=True, solver='adam',
+                                             tol=0.0001, validation_fraction=0.1, verbose=False, warm_start=False)
+            elif model == "sgd":
+                self.clf = SGDClassifier(**kwargs, penalty="l2", fit_intercept=True, max_iter=10000, tol=1e-3,
+                                         n_jobs=-1)
+            elif model == "logistic":
+                self.clf = LogisticRegression(**kwargs, solver="liblinear", penalty="l2", fit_intercept=True,
+                                              max_iter=100, tol=1e-4, n_jobs=-1)  # Uses OvR
+            elif model == "svc_lin":
+                self.clf = LinearSVC(**kwargs, multi_class="ovr", penalty="l2", fit_intercept=True, max_iter=1000,
+                                     tol=1e-4)
+            elif model == "svc_poly":
+                self.clf = SVC(**kwargs, kernel='poly', degree=3, decision_function_shape="ovr", max_iter=1000,
+                               tol=1e-3)
+            elif model == "dt":
+                self.clf = DecisionTreeClassifier(**kwargs, criterion="gini", splitter="best")
 
+            # Fit and evaluate selected model.
+            self.fit_classifier()
             self.k_fold_cross_validation()
             self.evaluate_classifier()
 
@@ -167,15 +175,15 @@ class Classifier:
         elif config.is_randomised_search:
             print("Hyperparameter tuning technique chose: RANDOMISED SEARCH")
             parameters = {
-                'hidden_layer_sizes': (sp_randint(1, 125)),
+                'hidden_layer_sizes': (sp_randint(1, 150)),
                 'learning_rate_init': sp_uniform(0.001, 1),
-                'momentum': sp_uniform(0.1, 1),
+                'momentum': sp_uniform(0.1, 0.9),
                 'alpha': sp_uniform(0.0001, 1)
             }
             searchCV = RandomizedSearchCV(
                 param_distributions=parameters,
                 estimator=self.clf,
-                n_iter=100,
+                n_iter=75,
                 cv=self.folds,
                 scoring=scoring
             )

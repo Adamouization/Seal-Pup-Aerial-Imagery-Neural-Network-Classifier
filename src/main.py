@@ -1,6 +1,8 @@
 import argparse
 import time
 
+import pandas as pd
+
 from src.classifiers import Classifier
 from src.data_manipulations import *
 from src.data_visualisation import *
@@ -20,7 +22,10 @@ def main() -> None:
     # Make final predictions on X_test.csv (produce 'Y_test.csv' for practical submission).
     if config.section == "test":
         X_test = load_testing_data()
+
+        # Run this once to save the CSV files imported into DFs in PKL format for quicker loading times.
         # save_df_to_pickle(X_test, config.dataset, "X_test")
+
         X = input_preparation(X_test)
         make_final_test_predictions(X)
 
@@ -47,6 +52,17 @@ def main() -> None:
 
         # Train classification models.
         elif config.section == "train":
+
+            # Over sample binary dataset.
+            if config.dataset == "binary":
+                X_train, y_train = over_sample(X_train, y_train)
+
+            # Run this once to save the CSV files imported into DFs in PKL format for quicker loading times.
+            # save_df_to_pickle(X_train_resampled, config.dataset, "X_train_resampled")
+            # save_df_to_pickle(y_train_resampled, config.dataset, "Y_train_resampled")
+            if config.verbose_mode:
+                visualise_class_distribution(X_train)
+
             X = input_preparation(X_train)
             y, ground_truth = output_preparation(y_train)
             if config.section == "train":

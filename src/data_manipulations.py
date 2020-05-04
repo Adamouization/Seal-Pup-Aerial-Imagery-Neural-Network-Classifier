@@ -1,3 +1,4 @@
+from imblearn.over_sampling import SMOTE
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -6,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
 import src.config as config
-from src.helpers import is_file_exists, save_plot
+from src.helpers import is_file_exists, save_df_to_pickle, save_plot
 
 
 @make_spin(Box1, "Loading training data into memory...")
@@ -68,13 +69,29 @@ def split_features(X_train):
     return X_train_HoG, X_train_normal_dist, X_train_colour_hists
 
 
+@make_spin(Box1, "Oversampling the data using SMOTE algorithm...")
+def over_sample(X_train, y_train):
+    """
+    Oversamples the dataset using the SMOTE algorithm.
+    :param X_train: features DF.
+    :param y_train: labels DF.
+    :return: the oversampled dataset.
+    """
+    sm = SMOTE(random_state=config.RANDOM_SEED)
+    X_train_resampled, y_train_resampled = sm.fit_sample(X_train, y_train)
+    return X_train_resampled, y_train_resampled
+
+
 @make_spin(Box1, "Transforming features...")
 def input_preparation(X_train, variance: float = 0.99):
     """
-
-    :param X_train:
-    :param variance:
-    :return:
+    Data pre-processing for classification task:
+        1) Drop normal distribution features (keep HoG and RGB histograms)
+        2) Standardise data
+        3) Apply PCA to reduce to 475 dimensions.
+    :param X_train: the un-processed features.
+    :param variance: the explained variance to conserve in the data after PCA.
+    :return: the processed features, ready for the classification.
     """
     # Drop the normal distribution features (columns 900-916), only keep HoG and RGB histograms (0-900;916-964).
     X_train_trimmed = pd.concat([X_train.iloc[:, :900], X_train.iloc[:, 916:]], axis=1)
@@ -115,6 +132,9 @@ def input_preparation(X_train, variance: float = 0.99):
         save_plot("explained_variance_plot_{}".format(config.dataset))
         plt.show()
 
+    # Run this once to save the CSV files imported into DFs in PKL format for quicker loading times.
+    # save_df_to_pickle(X_train_reduced, config.dataset, "X_train_processed")
+
     print("\nFeatures transformed using standard scaling and reduced using PCA")
     return X_train_reduced
 
@@ -134,3 +154,7 @@ def output_preparation(y_train):
     y_train_unravelled = y_train.values.ravel()
 
     return y_train_unravelled, y_train
+
+
+def revert_binary_predictions(predictions):
+    return predictions
