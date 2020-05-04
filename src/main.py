@@ -72,15 +72,22 @@ def parse_command_line_arguments() -> None:
                         )
     parser.add_argument("-m", "--model",
                         default="logistic",
-                        help="The regression model to use for training. Must be either 'sgd', 'logistic', 'svc_lin' or "
-                             "'svc_poly'."
+                        help="The regression model to use for training. Must be either 'sgd', 'logistic', 'svc_lin',"
+                             "'svc_poly', 'mlp' or 'dt'."
                         )
-    parser.add_argument("-g", "--gridsearch",
+    parser.add_argument("-gs", "--gridsearch",
                         action="store_true",
                         default=False,
                         help="Include this flag to run the grid search algorithm to determine the optimal "
-                             "hyperparameters for the regression model. Only works for linear regression with either"
-                             "Ridge or Lasso regularisation."
+                             "hyperparameters for the classification model. Only works for multi layer perceptrons "
+                             "(MLP - neural networks)."
+                        )
+    parser.add_argument("-rs", "--randomisedsearch",
+                        action="store_true",
+                        default=False,
+                        help="Include this flag to run the randomised search algorithm to determine optimal "
+                             "hyperparameters for the classification model. Only works for multi layer perceptrons "
+                             "(MLP - neural networks)."
                         )
     parser.add_argument("-v", "--verbose",
                         action="store_true",
@@ -91,6 +98,7 @@ def parse_command_line_arguments() -> None:
     config.dataset = args.dataset
     config.model = args.model
     config.is_grid_search = args.gridsearch
+    config.is_randomised_search = args.randomisedsearch
     config.verbose_mode = args.verbose
 
 

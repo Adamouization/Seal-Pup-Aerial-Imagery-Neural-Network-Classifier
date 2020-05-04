@@ -2,11 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from pyspin.spin import Box1, make_spin
+from scipy.stats import randint as sp_randint, uniform as sp_uniform
 import seaborn as sns
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score, precision_score, \
     recall_score
-from sklearn.model_selection import cross_val_predict, GridSearchCV
+from sklearn.model_selection import cross_val_predict, GridSearchCV, RandomizedSearchCV
 from sklearn.neural_network import MLPClassifier
 from sklearn.svm import LinearSVC, SVC
 from sklearn.tree import DecisionTreeClassifier
@@ -39,9 +40,9 @@ class Classifier:
         self.predictions = None
 
         # Perform hyperparameter tuning (grid search) on the chosen model.
-        if config.is_grid_search:
-            self.clf = MLPClassifier(**kwargs, solver="adam", learning_rate="constant", verbose=config.verbose_mode)
-            self.grid_search()
+        if config.is_grid_search or config.is_randomised_search:
+            self.clf = MLPClassifier(**kwargs, solver="adam", learning_rate="constant", activation="relu", verbose=config.verbose_mode)
+            self.hyperparameter_tuning()
 
         # Fit, perform k-fold cross validation and evaluate a model.
         else:
@@ -131,43 +132,67 @@ class Classifier:
         _plot_pretty_confusion_matrix(cm, cm_labels, False)
         _plot_pretty_confusion_matrix(cm, cm_labels, True)
 
-    @make_spin(Box1, "Performing grid search...")
-    def grid_search(self):
+    @make_spin(Box1, "Performing hyperparameter tuning...")
+    def hyperparameter_tuning(self) -> None:
         """
-        Perform grid search on the defined parameters and save the results in a CSV file.
+        Performs a hyperparameter tuning search (either grid search or randomised search) on the defined parameters and
+        saves the results in a CSV file for further analysis.
+        Note: only designed to work with MLP (determined based on initial evaluations).
         :return: None.
         """
-        parameters = {
-            'hidden_layer_sizes': [(100,), (475,), (1000,)],
-            'activation': ["relu", "tanh"],
-            'learning_rate_init': [0.1, 0.5, 1.0],
-            'momentum': [0.1, 0.5, 1.0]
-        }
-
+        # Determine scoring metric to use based on dataset.
         scoring = str()
         if config.dataset == "binary":
-            scoring = "f1"
+            scoring = "accuracy"
         elif config.dataset == "multi":
             scoring = "f1_weighted"
-        gs = GridSearchCV(
-            param_grid=parameters,
-            estimator=self.clf,
-            cv=self.folds,
-            scoring=scoring
-        )
-        gs_results = gs.fit(self.X, self.y)
+
+        parameters = dict()
+        search_alg_str = str()
+        # Initialise Grid Search.
+        if config.is_grid_search:
+            print("Hyperparameter tuning technique chose: GRID SEARCH")
+            parameters = {
+                'hidden_layer_sizes': [(100,), (475,), (1000,)],
+                'learning_rate_init': [0.1, 0.5, 1.0],
+            }
+            searchCV = GridSearchCV(
+                param_grid=parameters,
+                estimator=self.clf,
+                cv=self.folds,
+                scoring=scoring
+            )
+            search_alg_str = "gs"
+        # Initialise Randomised Search.
+        elif config.is_randomised_search:
+            print("Hyperparameter tuning technique chose: RANDOMISED SEARCH")
+            parameters = {
+                'hidden_layer_sizes': (sp_randint(1, 125)),
+                'learning_rate_init': sp_uniform(0.001, 1),
+                'momentum': sp_uniform(0.1, 1),
+                'alpha': sp_uniform(0.0001, 1)
+            }
+            searchCV = RandomizedSearchCV(
+                param_distributions=parameters,
+                estimator=self.clf,
+                n_iter=100,
+                cv=self.folds,
+                scoring=scoring
+            )
+            search_alg_str = "rs"
+
+        # Run the search and save results in a CSV file.
+        gs_results = searchCV.fit(self.X, self.y)
         gs_results_df = pd.DataFrame(gs_results.cv_results_)
-        gs_results_df.to_csv("../results/grid_search/{}_{}_gs.csv".format(config.dataset, config.model))
+        gs_results_df.to_csv("../results/grid_search/{}_{}_{}.csv".format(config.dataset, config.model, search_alg_str))
 
-        # Top 5 hyperparameters found for Lasso Regression.
-        print("Top 5 hyperparameters combinations found:")
-        gs_results_df.sort_values(by=['rank_test_score']).head(5)
-
-        # Best model found by grid search algorithm for Lasso Regression.
+        # Print the best model found by hyperparameter tuning algorithm for the MLP and save the model in a Pickle file.
         final_model = gs_results.best_estimator_
         print("\nBest model hyperparameters found by randomised search algorithm:")
         print(final_model)
-        save_model(final_model, config.dataset, "multi_mlp_search_best")
+        print("Score: {}".format(gs_results.best_score_))
+        save_model(final_model, config.dataset,
+                   "{}_{}_{}_best_estimator".format(config.dataset, config.model, search_alg_str))
 
 
 def _plot_pretty_confusion_matrix(cm, labels: list, is_normalised: bool) -> None:
