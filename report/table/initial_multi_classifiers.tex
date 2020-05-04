@@ -1,0 +1,20 @@
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[h]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{Model} & \textbf{SGD*} & \textbf{\begin{tabular}[c]{@{}c@{}}Logistic* \\ (OvR)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Linear \\ SVC\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Polynomial \\ SVC*\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Decision\\ Tree\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Neural \\ Network\end{tabular}} \\ \hline
+\textbf{Accuracy} & 93.02\% & 93.95\% & 93.67\% & N/A & 88.49\% & 91.85\% \\ \hline
+\textbf{Precision} & 91.41\% & 93.26\% & 92.42\% & N/A & 88.79\% & 90.63\% \\ \hline
+\textbf{Recall} & 93.02\% & 93.95\% & 93.67\% & N/A & 88.49\% & 91.86\% \\ \hline
+\textbf{F1 score} & 91.69\% & 93.50\% & 92.71\% & N/A & 88.64\% & 90.80\% \\ \hline
+\textbf{\begin{tabular}[c]{@{}c@{}}Runtime \\ (seconds)\end{tabular}} & 294.35 & 136.55 & 656.8 & N/A & 540.11 & 187.61 \\ \hline
+\textbf{\begin{tabular}[c]{@{}c@{}}Max \# \\ iterations\end{tabular}} & 10,000 & 100 & 1,000 & 10,000 & \infty & 100 \\ \hline
+\textbf{\begin{tabular}[c]{@{}c@{}}Convergence \\ warnings\end{tabular}} & Yes & Yes & Yes & Too long & No & Yes \\ \hline
+\end{tabular}%
+}
+\caption{Initial classification models evaluation using 3-fold cross validation on the multi dataset.\\ \textit{*Using all available processors for quicker runtimes.}}
+\label{tab:multi-classifiers}
+\end{table}
