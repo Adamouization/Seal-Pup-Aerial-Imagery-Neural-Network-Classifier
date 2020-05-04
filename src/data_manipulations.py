@@ -9,23 +9,53 @@ import src.config as config
 from src.helpers import is_file_exists, save_plot
 
 
-@make_spin(Box1, "Loading data into memory...")
-def load_data(dataset):
+@make_spin(Box1, "Loading training data into memory...")
+def load_training_data():
+    """
+    Load the training data (input and labels) either from a serialised file or the initial raw CSV file.
+    :return: the DataFrames holding the X_train and y_train datasets.
+    """
     # If PKL format already exists for the data, load it for quicker loading times
     #   (generate it by uncommenting the call to save_df_to_pickle).
-    if is_file_exists("../data/{}/X_train.pkl".format(dataset)):
-        X_train = pd.read_pickle("../data/{}/X_train.pkl".format(dataset))
-        y_train = pd.read_pickle("../data/{}/y_train.pkl".format(dataset))
+    if is_file_exists("../data/{}/X_train.pkl".format(config.dataset)):
+        X_train = pd.read_pickle("../data/{}/X_train.pkl".format(config.dataset))
+        y_train = pd.read_pickle("../data/{}/y_train.pkl".format(config.dataset))
         print("\nData loaded from 'X_train.pkl' and 'y_train.pkl'")
+
     # If PKL format not found, loads CSV file into memory (slower loadings times).
     else:
-        X_train = pd.read_csv("../data/{}/X_train.csv".format(dataset), header=None)
-        y_train = pd.read_csv("../data/{}/Y_train.csv".format(dataset), header=None)
+        X_train = pd.read_csv("../data/{}/X_train.csv".format(config.dataset), header=None)
+        y_train = pd.read_csv("../data/{}/Y_train.csv".format(config.dataset), header=None)
         print("\nData loaded from 'X_train.csv' and 'y_train.csv'")
     return X_train, y_train
 
 
+@make_spin(Box1, "Loading testing data into memory...")
+def load_testing_data():
+    """
+
+    :param dataset:
+    :return:
+    """
+    # If PKL format already exists for the data, load it for quicker loading times
+    #   (generate it by uncommenting the call to save_df_to_pickle).
+    if is_file_exists("../data/{}/X_test.pkl".format(config.dataset)):
+        X_test = pd.read_pickle("../data/{}/X_test.pkl".format(config.dataset))
+        print("\nData loaded from 'X_test.pkl'")
+
+    # If PKL format not found, loads CSV file into memory (slower loadings times).
+    else:
+        X_test = pd.read_csv("../data/{}/X_test.csv".format(config.dataset), header=None)
+        print("\nData loaded from 'X_test.csv'")
+    return X_test
+
+
 def split_features(X_train):
+    """
+
+    :param X_train:
+    :return:
+    """
     # First 900 columns = HoG extracted from the image (10×10 px cells, 9 orientations, 2×2 blocks).
     X_train_HoG = X_train.iloc[:, :900]
 
@@ -40,6 +70,12 @@ def split_features(X_train):
 
 @make_spin(Box1, "Transforming features...")
 def input_preparation(X_train, variance: float = 0.99):
+    """
+
+    :param X_train:
+    :param variance:
+    :return:
+    """
     # Drop the normal distribution features (columns 900-916), only keep HoG and RGB histograms (0-900;916-964).
     X_train_trimmed = pd.concat([X_train.iloc[:, :900], X_train.iloc[:, 916:]], axis=1)
 
@@ -84,6 +120,11 @@ def input_preparation(X_train, variance: float = 0.99):
 
 
 def output_preparation(y_train):
+    """
+    Prepare the labels for the classifiers.
+    :param y_train: the DF holding the un-processed labels.
+    :return: the unravelled and un-processed DFs holding the labels.
+    """
     if config.dataset == "binary":
         # Convert class ID output to boolean integer format for logistic regression:
         #   1 if it's a "seal", 0 if it's a "background").

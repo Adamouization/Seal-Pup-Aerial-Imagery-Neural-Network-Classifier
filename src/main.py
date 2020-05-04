@@ -4,7 +4,7 @@ import time
 from src.classifiers import Classifier
 from src.data_manipulations import *
 from src.data_visualisation import *
-from src.helpers import print_error_message, print_runtime, save_df_to_pickle
+from src.helpers import load_model, print_error_message, print_runtime, save_df_to_pickle
 
 
 def main() -> None:
@@ -17,39 +17,43 @@ def main() -> None:
     if config.verbose_mode:
         print("Verbose mode: ON\n")
 
-    X_train, y_train = load_data(config.dataset)
+    # Make final predictions on X_test.csv (produce 'Y_test.csv' for practical submission).
+    if config.section == "test":
+        X_test = load_testing_data()
+        # save_df_to_pickle(X_test, config.dataset, "X_test")
+        X = input_preparation(X_test)
+        make_final_test_predictions(X)
 
-    # Run this once to save the CSV files imported into DFs in PKL format for quicker loading times.
-    # save_df_to_pickle(X_train, y_train, config.dataset)
+    # Explore and train the classifiers.
+    else:
+        X_train, y_train = load_training_data()
 
-    # Visualise data.
-    if config.section == "data_vis":
-        start_time = time.time()
-        # Split training dataset's features in 3 distinct DFs.
-        X_train_HoG, X_train_normal_dist, X_train_colour_hists = split_features(X_train)
+        # Run this once to save the CSV files imported into DFs in PKL format for quicker loading times.
+        # save_df_to_pickle(X_train, config.dataset, "X_train")
+        # save_df_to_pickle(y_train, config.dataset, "y_train")
+
         # Visualise data.
-        data_overview(X_train)
-        visualise_hog(X_train_HoG)
-        visualise_rgb_hist(X_train_colour_hists)
-        visualise_class_distribution(y_train)
-        visualise_correlation(X_train, y_train)
-        print_runtime(round(time.time() - start_time, 2))
+        if config.section == "data_vis":
+            start_time = time.time()
+            # Split training dataset's features in 3 distinct DFs.
+            X_train_HoG, X_train_normal_dist, X_train_colour_hists = split_features(X_train)
+            # Visualise data.
+            data_overview(X_train)
+            visualise_hog(X_train_HoG)
+            visualise_rgb_hist(X_train_colour_hists)
+            visualise_class_distribution(y_train)
+            visualise_correlation(X_train, y_train)
+            print_runtime(round(time.time() - start_time, 2))
 
-    # Train or test classification models.
-    elif config.section == "train" or config.section == "test":
-        X = input_preparation(X_train)
-        y, ground_truth = output_preparation(y_train)
-        if config.section == "train":
-            train_classification_models(X, y, ground_truth)
-        elif config.section == "test":
-            pass
-            # final_evaluation()
+        # Train classification models.
+        elif config.section == "train":
+            X = input_preparation(X_train)
+            y, ground_truth = output_preparation(y_train)
+            if config.section == "train":
+                train_classification_models(X, y, ground_truth)
+
         else:
             print_error_message()
-    else:
-        print_error_message()
-
-    pass
 
 
 def parse_command_line_arguments() -> None:
@@ -108,8 +112,16 @@ def train_classification_models(X, y, ground_truth) -> None:
     print_runtime(round(time.time() - start_time, 2))
 
 
-def final_evaluation(test_set, final_model):
-    pass
+def make_final_test_predictions(X_test) -> None:
+    """
+    Make predictions on X_test and save them in 'Y_test.csv'.
+    :param X_test: the samples to predict.
+    :return: None
+    """
+    final_model = load_model(config.dataset, "mlp")
+    predictions = final_model.predict(X_test)
+    predictions_df = pd.DataFrame(predictions, index=None, columns=None)
+    predictions_df.to_csv("../data/{}/Y_test.csv".format(config.dataset), index=False, columns=None, header=False)
 
 
 if __name__ == "__main__":

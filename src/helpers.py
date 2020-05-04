@@ -41,6 +41,7 @@ def save_model(model, dataset, model_type: str) -> None:
 def load_model(dataset, model_type: str):
     """
     Function to load model.
+    :param dataset:
     :param model_type:
     :return:
     """
@@ -73,7 +74,13 @@ def is_file_exists(filepath: str) -> bool:
     return False
 
 
-def save_df_to_pickle(X_train_df, y_train_df, dataset) -> None:
-    pd.to_pickle(X_train_df, "../data/{}/X_train.pkl".format(dataset))
-    pd.to_pickle(y_train_df, "../data/{}/y_train.pkl".format(dataset))
-    print("Saved DFs in PKL format.")
+def save_df_to_pickle(df, dataset, name) -> None:
+    """
+    Save a DataFrame to a serialised Pickle format.
+    :param df: the DataFrame to save.
+    :param dataset: string representation of the dataset used for file organisation.
+    :param name: string representation of the model name.
+    :return: None.
+    """
+    pd.to_pickle(df, "../data/{}/{}.pkl".format(dataset, name))
+    print("Saved DataFrame in PKL format.")
