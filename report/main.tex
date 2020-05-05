@@ -73,28 +73,10 @@ This practical covers the exploration of various machine learning practices used
 
 The report is separated in four sections, starting with a general introductory section before exploring the diverse array of methodologies and design decisions made during the development of the code in Python, followed by an evaluation of the final classifier and a critical reflection on the findings.
 
-\subsection{Usage instructions}
+% ------------------- SYSTEM ARCHITECTURE --------------------
 
-Before running the code, create a new virtual environment and install the Python libraries used in the code by running the following command:
-
-\begin{lstlisting}
-pip install -r requirements.txt
-\end{lstlisting}
-
-To run the program, move to the “src” directory and run the following command:
-
-\begin{lstlisting}
-python main.py -s <section> -d <dataset> [-m <model>] [-g] [-v]
-\end{lstlisting}
-
-where:
-\begin{itemize}
-    \item``\textit{-s section}'': is a setting that executes different parts of the program. It must be one of the following: `\textit{data\_vis}', `\textit{train}' or `\textit{test}'.
-    \item``\textit{-d dataset}'': selects the dataset to use. It must be set to either `\textit{binary}' or `\textit{multi}'.
-    \item``\textit{-m model}'': is an optional setting that selects the classification model to use for training. It must be one of the following: `\textit{sgd}', `\textit{logistic}', `\textit{svc\_lin}', `\textit{svc\_poly}'.
-    \item``\textit{-gs}'' and ``\textit{-gs}'': are optional flags to run the hyperparameter tuning algorithms (either grid search or randomised search algorithms) for the selected classification model. The flag only takes effect when using multi-layer perceptron classifiers (neural networks).
-    \item``\textit{-v}'': is an optional flag that enters verbose (debugging) mode, printing additional statements on the command line.
-\end{itemize}
+\section{System Architecture}
+\label{sec:system-architecture}
 
 \subsection{Tools used}
 
@@ -105,11 +87,6 @@ where:
     \item Version controlling: Git and GitHub (private repository).
     \item Initial code prototyping: Jupyter Lab.
 \end{itemize}
-
-% ------------------- SYSTEM ARCHITECTURE --------------------
-
-\section{System Architecture}
-\label{sec:system-architecture}
 
 \subsection{Project structure}
 
@@ -132,6 +109,8 @@ A command-line interface, implemented through Python’s native library \textit{
     \item Running a hyperparameter tuning algorithm (grid search or randomised search) on promising models.
     \item Making predictions using the final model.
 \end{itemize}
+
+Read the \textit{``README.txt''} file provided in the submission for instructions on how to install and run the code.
 
 % ------------------- PART 3: Methodology, design decisions --------------------
 
@@ -171,7 +150,7 @@ Storing the features and labels in a \textit{DataFrames} provides a valuable arr
     \item All training values are numerical (floats).
 \end{itemize}
 
-This initial overview confirms that no data encoding is required to use the features, and that the data is considered to ``clean'', thus requiring no processing.
+This initial overview confirms that no data encoding is required to use the features and that the data is considered to ``clean'', thus requiring no processing.
 
 \subsubsection{Classes distribution}
 \label{sec:classes-distribution}
@@ -182,12 +161,12 @@ s this is a classification task, it is important to verify the distribution of c
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=\textwidth]{results/binary_class_distribution.png}
+  \includegraphics[width=\textwidth]{report/figures/binary_class_distribution.png}
   \label{fig:binary_class_distribution}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=\textwidth]{results/multi_class_distribution.png}
+  \includegraphics[width=\textwidth]{report/figures/multi_class_distribution.png}
   \label{fig:multi_class_distribution}
 \end{subfigure}
 \caption{\label{fig:class_distribution}Class distribution of the binary (left) and multi (right) datasets.}
@@ -221,7 +200,7 @@ Not all 964 features should be used due to the large complexity introduced by th
 \caption{\label{fig:correlation-results}Top 10 training dataset column indexes (features) with the highest standard correlation coefficient. Left shows positive correlations, right shows negative correlation.}
 \end{figure}
 
-High positive correlation is achieved for features ranging between columns 916-964, which corresponds to RGB colour histograms, while high negative correlation is achieved for features ranging between columns 0-900, which corresponds to HoGs. However, because no feature from the normal distribution have a high correlation  with the class labels, it can be dropped altogether.
+A high positive correlation is achieved for features ranging between columns 916-964, which corresponds to RGB colour histograms, while high negative correlation is achieved for features ranging between columns 0-900, which corresponds to HoGs. However, because no feature from the normal distribution have a high correlation  with the class labels, it can be dropped altogether.
 
 \subsubsection{Visualising features}
 
@@ -238,7 +217,7 @@ To directly visualise some information about the images, the HoG features are re
 
 The features corresponding to the RGB colour histograms are visualised in Figure \ref{fig:rgb-hists}, revealing that there are more low-intensity pixels than high-intensity pixels.\\
 
-Due to the considerable spread across the x and y axes witnessed in the range of values for HoGs and RGB histograms (data distribution is not bell-shaped  as some values are more concentrated on extremities, and ) the data will require some feature transformation such as standardising the dataset.
+Due to the considerable spread across the X and Y axes witnessed in the range of values for HoGs and RGB histograms (data distribution is not bell-shaped  as some values are more concentrated on extremities), the data will require some feature transformation such as standardising the dataset.
 
 \begin{figure}[h]
 \centering
@@ -257,7 +236,6 @@ Due to the considerable spread across the x and y axes witnessed in the range of
 
 % -------------------
 
-\newpage
 \subsection{Data pre-processing}
 \label{sec:data-preprocessing-steps}
 
@@ -265,26 +243,26 @@ With the data visualisation and analysis steps completed, the training set can n
 
 \subsubsection{Step 1: SMOTE oversampling}
 
-To solve the issue of skewed datasets raised in Section \ref{sec:classes-distribution}, one potential solution is to undersample or oversample the data. Undersampling the data is considered inefficient on its own as it may discard useful information from the training set. Regarding oversampling, many techniques exist, with the most simple one consisting in duplicating the samples from the infrequent classes to diminish the imbalance. However, such an approach would likely cause the classifier to overfit the data as samples from infrequent classes would have a very large weights, causing the classifiers to learn these examples ``by heart'', thus not generalising well to unseen data, even if it is similar.\\
+To solve the issue of skewed datasets raised in Section \ref{sec:classes-distribution}, one potential solution is to undersample or oversample the data. Undersampling the data is considered inefficient on its own as it may discard useful information from the training set. Regarding oversampling, many techniques exist, with the most simple one consisting in duplicating the samples from the infrequent classes to diminish the imbalance. However, such an approach would likely cause the classifier to overfit the data as samples from infrequent classes would have a very large weights, causing the classifiers to learn these examples ``by heart'', thus not generalising well to unseen data, even if it is similar \cite{becker2020}.\\
 
-An alternative is to produce synthetic data based on the infrequent classes by creating ``similar'' copies. This is achieved through the Synthetic Minority Over-Sampling Technique (SMOTE), which uses the K-Nearest Neighbours (kNN) algorithm to create similar data. These newly created samples are therefore not copies of the original ones, meaning the classifier will be better able to generalise. The changes to both datasets after oversampling with SMOTE are shown in Figure \ref{fig:class_distribution_oversample} (compare with the class distributions found in Figure \ref{fig:class_distribution}).
+An alternative is to produce synthetic data based on the infrequent classes by creating ``similar'' copies. This is achieved through the Synthetic Minority Over-Sampling Technique (SMOTE), which uses the K-Nearest Neighbours (kNN) algorithm to create similar data. These newly created samples are therefore not copies of the original ones, meaning the classifier will be better able to generalise \cite{chawla2002smote}.. The changes to both datasets after oversampling with SMOTE are shown in Figure \ref{fig:class_distribution_oversample} (compare with the class distributions found in Figure \ref{fig:class_distribution}).
 
 \begin{figure}[h]
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=\textwidth]{results/binary_class_distribution.png}
-  \label{fig:binary_class_distribution_oversample}
+  \includegraphics[width=\textwidth]{report/figures/binary_class_distribution_oversampled.png}
+  \label{fig:binary_class_distribution_oversampled}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=\textwidth]{results/multi_class_distribution.png}
-  \label{fig:multi_class_distribution_oversample}
+  \includegraphics[width=\textwidth]{report/figures/multi_class_distribution_oversampled.png}
+  \label{fig:multi_class_distribution_oversampled}
 \end{subfigure}
 \caption{\label{fig:class_distribution_oversample}Class distribution of the binary (left) and multi (right) datasets after SMOTE oversampling.}
 \end{figure}
 
-The number of least frequent classes are all brought up to the number of the most abundant class, which is ``\textit{background}''. This could improve the binary dataset by rising the number of ``\textit{seals}'' to XXX  to XXX, which is acceptable; but it causes the multi dataset to become too large, rising from XXX to XXX. Additionally, in the case of the ``\textit{juvenile}'' class, over XX samples are created from only XXX samples, raising doubt about how close to the original samples the synthetic ones are. Indeed, performing a quick cross validation test using the oversampled data on the multi dataset to confirm the aforementioned doubts reveals that the classifier largely overfits the oversampled data, reaching ~97\% accuracy using cross-validation, but only 22\% accuracy after being predictions on the test data through online leaderboards tool provided\footnote{The terms used in this paragraph are all explained in further sections.}. Therefore, SMOTE oversampling is only applied to the binary dataset.
+The number of least frequent classes are all brought up to the number of the most abundant class, which is ``\textit{background}''. This could improve the binary dataset by rising the number of ``\textit{seals}'' from 7,778  to 54,432  for a total of 108,864 samples, which is acceptable. However, it causes the multi dataset to become too large, rising from 62,210 samples to 272,160. Additionally, in the case of the least frequent class, ``\textit{juvenile}'', over 54,184 new samples are created from only 248 samples, raising doubt about how close to the original samples the synthetic ones are. Indeed, performing a quick cross validation test using the oversampled data on the multi dataset to confirm the aforementioned doubts reveals that the classifier largely overfits the oversampled multi dataset, reaching ~97\% accuracy using cross-validation, but only 22\% accuracy on its predictions on the test data (checked through the online leaderboards tool provided\footnote{The terms used in this paragraph are all explained in further sections.}). Therefore, SMOTE oversampling is only applied to the binary dataset.
 
 \subsubsection{Step 2: Dropping features with poor correlation}
 \label{sec:drop-poor-features}
@@ -294,7 +272,7 @@ Based on the correlation results, the normal distribution features can be droppe
 \subsubsection{Step 3: Standardising the dataset}
 \label{sec:standard-scaling}
 
-Next, visualising the values of the dataset revealed how the data distribution is not bell-shaped and has very different scales between the HoG features and the RGB histograms. Therefore, the features are standardised using the \textit{sklearn.preprocessing.StandardScaler} class, resulting in a distribution with unit variance a shape closer to a bell (the two properties of standardised distributions are a mean of all values equal to 0 and a standard deviation equal to 1) \cite{Geron2019}\cite{Glen2014}. The \textit{StandardScaler} instance used is saved to a Pickle file in the ``\textit{transform\_pipeline}'' directory to eventually apply the same the transformations on the test data.
+Next, visualising the values of the dataset revealed how the data distribution is not bell-shaped and has very different scales between the HoG features and the RGB histograms. Indeed, HoG values are floats nearing 0, whereas the 16-bin RGB histogram values range from 0 to 255. Therefore, the features are standardised using the \textit{sklearn.preprocessing.StandardScaler} class, resulting in a distribution with unit variance a shape closer to a bell (the two properties of standardised distributions are a mean of all values equal to 0 and a standard deviation equal to 1) \cite{Geron2019}\cite{Glen2014}. The \textit{StandardScaler} instance used is saved to a Pickle file in the ``\textit{transform\_pipeline}'' directory to eventually apply the same the transformations on the test data.
 
 \subsubsection{Step 4: Principal Component Analysis}
 \label{sec:pca}
@@ -306,13 +284,13 @@ However, the curse of dimensionality remains as there are still 948 columns in t
 \begin{subfigure}{0.5\textwidth}
   \centering
   \includegraphics[width=\textwidth]{report/figures/explained_variance_multi.png}
-  \caption{Binary dataset: 492 dimensions.}
+  \caption{Binary dataset: 492 dimensions to keep.}
   \label{fig:explained_variance_binary}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=\textwidth]{report/figures/explained_variance_multi.png}
-    \caption{Multi dataset: 475 dimensions.}
+    \caption{Multi dataset: 475 dimensions to keep.}
   \label{fig:explained_variance_multi}
 \end{subfigure}
 \caption{\label{fig:explained_variance}Explained variance plotted against number of dimensions to reveal the number of dimensions that are  required to maintain 99\% variance in both datasets.}
@@ -320,19 +298,20 @@ However, the curse of dimensionality remains as there are still 948 columns in t
 
 \subsubsection{Step 5: Label preparation}
 
-todo
+Basic label processing is conducted for the binary data, converting categorical input to numerical input by converting ``\textit{backgrounds}'' to 0 and ``\textit{seal}'' to 1. The array holding the labels is then flattened using the \textit{numpy.ravel} function in order to be compatible with Scikit-Learn's classifiers.
 
 % -------------------
 
 \subsection{Model training}
 
 \subsubsection{Model selection strategy}
+\label{sec:initial-model-selection-strategy}
 
 At this point, the training data is ready to be fed into the classifiers. The classification models will fit the transformed features from ``\textit{X\_train.csv}'' before making their own predictions, which will be compared with the real labels found in ``\textit{Y\_train.csv}'' for evaluation.\\
 
 According to A. Géron, an efficient approach to model selection is to try out multiple classifiers, with hyperparameters close to the default values recommended by Scikit-Learn. The goal of this method is to gain a high-level intuition of which classification models to further explore and tweak \cite{Geron2019}.\\
 
-After briefly evaluating a Stochastic Gradient Descent (SGD) classifier, One-verus-Rest (OvR) Logistic Regression, Linear and Polynomial (3rd degree) Support Vector Classifiers (SVC), Decision Tree and Multi Layer Perceptron\footnote{Multi Layer Perceptron are also known as Neural Networks} (MLP), using 3-fold cross validation on all, the MLP was selected due to its consistency across different scoring methods and its lower runtime. ``Simpler'' models such as the SGD or OvR logistic regressor were not customisable enough, running the risk of poorly adapting to the large dataset, whereas Support  Vector Machine-based and Decision Tree-based classifiers took a very long time to fit and  are likely to overfit the data if poorly tuned. Therefore, neural networks provided the perfect middle ground for being highly customisable (23 hyperparameters) and quicker than the other models. See Appendix \ref{sec:appendix-initial-default-classifiers} for the results in tabular format.
+After briefly evaluating a Stochastic Gradient Descent (SGD) classifier, One-versus-Rest (OvR) Logistic Regression, Linear and Polynomial (3rd degree) Support Vector Classifiers (SVC), Decision Tree and Multi-Layer Perceptron\footnote{Multi-Layer Perceptron are also known as Neural Networks} (MLP), using 3-fold cross validation on all, the MLP was selected due to its consistency across different scoring methods and its lower runtime. ``Simpler'' models such as the SGD or OvR logistic regressor were not customisable enough, running the risk of poorly adapting to the large dataset, whereas Support  Vector Machine-based and Decision Tree-based classifiers took a very long time to fit and  are likely to overfit the data if poorly tuned. Therefore, neural networks provided the perfect middle ground for being highly customisable (23 hyperparameters) and quicker than the other models. See Appendix \ref{sec:appendix-initial-default-classifiers} for the results in tabular format.
 
 \subsubsection{Classification performance metrics}
 \label{sec:performance-metrics}
@@ -350,11 +329,11 @@ As mentioned in Section \ref{sec:classes-distribution}, simply using accuracy ca
 
 \subsubsection{K-fold cross validation}
 
-K-fold cross validation consists of a representative way of evaluating the trained regression model. It divides the training set in $K$ subsets (e.g. K=3) and evaluates the model $K$ times. Using the \textit{sklearn.model\_selection.cross\_val\_predict} function, predictions can be made on each subset, ultimately resulting in a clean prediction for each sample in the training set (the predictions are made by a model that never saw the data during training) \cite{Geron2019}. Despite the advantages of running k-fold cross validation, it is not always possible due to the expensive cost of multiplying the runtimes by the number of folds.\\
+K-fold cross validation consists of a representative way of evaluating the trained regression model. It divides the training set into $K$ subsets (e.g. K=3) and evaluates the model $K$ times. Using the \textit{sklearn.model\_selection.cross\_val\_predict} function, predictions can be made on each subset, ultimately resulting in a clean prediction for each sample in the training set (the predictions are made by a model that never saw the data during training) \cite{Geron2019}. Despite the advantages of running k-fold cross validation, it is not always possible due to the expensive cost of multiplying the runtimes by the number of folds.\\
 
-With the research made on the use of cross validation through the \textit{cross\_val\_predict} function, the motivation to not split the training data into training/validation sets was made. Indeed, splitting  the the imbalanced training dataset using the popular 80\%/20\% split would have considerably diminished the number of samples  in infrequent classes, giving the pre-processing algorithms and classification models even less samples to learn these rare classes. For example, the ``\textit{juvenile}'' class samples would be lowered from XXX to XXX in the training dataset, which would affect the SMOTE oversampling and perhaps the models' correctness.\\
+With the research made on the use of cross validation through the \textit{cross\_val\_predict} function, the motivation to not split the training data into training/validation sets was made. Indeed, splitting  the  imbalanced training dataset using the popular 80\%/20\% split would have considerably diminished the number of samples  in infrequent classes, giving the pre-processing algorithms and classification models even fewer samples to learn these rare classes. For example, the number of ``\textit{juvenile}'' class samples would be lowered from 248 to 198 in the training dataset, which could negatively affect the SMOTE oversampling (the synthetic copies would not be varied enough) and perhaps the models' correctness.\\
 
-Additionally, the multi layer perceptron classifiers being the quickest  models  support the choice of using cross validation (i.e. it would have been unrealistic to use cross  validation with a polynomial SVC). Validation sets are usually created to ensure that the model can generalise to unseen data  \cite{Geron2019}, but the use of the \textit{cross\_val\_predict} function which allows clean predictions to be made and detailed analysis using the metrics mentioned in Section \ref{sec:performance-metrics}, couple with the availability of the online leaderboards tool provided to view the overall accuracy of the final model's predictions made on ``\textit{X\_test.csv}'' are enough to determine if the model generalises well to unseen data.
+Additionally, the multi-layer perceptron classifiers being the quickest  models  support the choice of using cross validation (i.e. it would have been unrealistic to use cross  validation with a polynomial SVC). Validation sets are usually created to ensure that the model can generalise to unseen data  \cite{Geron2019}, but both the use of the \textit{cross\_val\_predict} function (which allows clean predictions to be made) and the metrics mentioned in Section \ref{sec:performance-metrics}, coupled with the availability of the online leaderboards tool provided to view the overall accuracy of the final model's predictions made on ``\textit{X\_test.csv}'', are enough to determine if the model generalises well to unseen data.
 
 \subsubsection{Neural network hyperparameter tuning}
 
@@ -367,9 +346,9 @@ Neural networks have complex layered structures. Figure \ref{fig:neural_network}
 \caption{\label{fig:neural_network}Visualisation of a potential neural network to learn the data.}
 \end{figure}
 
-To account for the ``deep'' structure of the neural network which could easily overfit the data, two of the hyperparameters explored is the amount of regularisation ``alpha'' and the number of neurons in the hidden layer. Additionally, because the neural network uses a stochastic gradient descent-based approach to minimise the error at each epoch (iteration) and backpropagation to adjust the weights accordingly at each epoch \cite{russell2016artificial}, the learning rate and and momentum hyperparameters are explored as well. The different combinations of parameters explored across the binary and multi datasets are located in Appendix \ref{sec:appendix-randomised-grid-search}, resulting in over XXX models evaluated.\\
+To account for the ``deep'' structure of the neural network which could easily overfit the data, two of the hyperparameters explored is the amount of regularisation ``alpha'' and the number of neurons in the hidden layer. Additionally, because the neural network uses a stochastic gradient descent-based approach to minimise the error at each epoch (iteration) and backpropagation to adjust the weights accordingly at each epoch \cite{russell2016artificial}, the learning rate and momentum hyperparameters are explored as well. The most important different combinations of parameters explored across the binary and multi datasets through randomised and grid searches are located in Appendix \ref{sec:appendix-randomised-grid-search}.\\
 
-The results are all reported back into CSV files containing information about each combination of hyperparameters. The various models evaluated using  3-fold cross validation are ranked by their F1 score to determine how well the hyperparameters worked on them. The full results of each search are stored in csv files in the ``\textit{results/grid\_search}'' directory.
+The results are all reported back into CSV files containing information about each combination of hyperparameters. The various models evaluated using  3-fold cross validation are ranked by their F1 score to determine how well the hyperparameters worked on them. The full results of each search are stored in csv files in the ``\textit{results/grid\_search}'' directory. In total, four randomised searches and three grid searches were conducted, resulting in 449 models trained over the course of 964 minutes. Among these, 251 were dedicated to the multi dataset and 198 to the binary, depicting the additional effort required to fine-tune the neural network for more complex data.
 
 \subsubsection{Full training approach}
 \label{sec:full-training-approach}
@@ -390,35 +369,62 @@ Training is tackled as follows:
 \section{Conclusion: Evaluation \& Critical Discussion}
 \label{sec:evaluation}
 
-\subsection{Selecting the best classifier}
+\subsection{Evaluating the optimal neural networks}
 
-The training execution flow mentioned in Section \ref{sec:full-training-approach} is followed for both the binary and multi datasets. The table below documents the cross-validation performances for the two neural networks trained for each dataset:
+The training execution flow mentioned in Section \ref{sec:full-training-approach} is followed for both the binary and multi datasets. Table \ref{tab:results} documents the cross-validation performances for the two optimal neural networks trained for each dataset.
 
-todo add cross-validation scores achieved for binary and multi in a table
+\input{report/table/final_results}
 
+The table indicates that the neural networks determined via hyperparameter fine-tuning perform well, achieving high F1 scores. Further analysis can be conducted by observing their normalised confusion matrices in Figure \ref{fig:mlp_class_distribution_normalised}:
 
-% This table indicates that there is minimal difference between the performance of each optimal linear regression model. Indeed, looking at the column of the optimal hyperparameters used for each optimal model, the alpha constant, which sets the strength of the regularisation for the Ridge and Lasso models, and therefore the penalty applied to irrelevant features, are near 0. This means that a general linear regression model without regularisation is actually being applied in all three cases. To break the tie, the linear regression model with Ridge regularisation is used as it includes some minor form of regularisation which may help generalise to unseen data.
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{report/figures/binary_mlp_class_distribution_normalised.png}
+  \label{fig:binary_mlp_class_distribution_normalised}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{report/figures/multi_mlp_class_distribution_normalised.png}
+  \label{fig:multi_mlp_class_distribution_normalised}
+\end{subfigure}
+\caption{\label{fig:mlp_class_distribution_normalised}Normalised confusion matrices.}
+\end{figure}
 
-\subsection{Final test}
+The normalised confusion matrices for the binary dataset reveal that all background predictions are correct, while only a few backgrounds are misclassified as seals. This could perhaps indicate that the synthetic seal samples created are not as good as the original background samples, pointing towards using a more efficient oversampling algorithm. Concerning the multi dataset, there are a lot more misclassifications due to confusion amongst the different types of seals. Indeed, there is often confusion between which type of seal is in the image, especially when whitecoat predictions are made (the whitecoat column is often filled). However, there are two pleasant surprises. The first one is how the infrequent classes, dead pups and juvenile, are often correctly classified when predicted, and the second is how any type of seal prediction is never classified as a background, indicating despite being confused about the type of seal, the neural network never classified a seal as a background.\\
 
-Finally, the test features are loaded memory in the same fashion the training data was. The same data transformations that were applied to the training data are applied to the testing data, namely dropping low correlation features (see Section \ref{sec:drop-poor-features}), standardising and applying a PCA projection. This is achieved by loading back the \textit{StandardScaler} (see Section \ref{sec:standard-scaling}) and \textit{PCA} (see Section \ref{sec:pca}) instances that initially learned the training data to transform the test data. The ``\textit{transform}'' function is used rather than the ``\textit{fit\_transform}'' function to do so.\\
+Finally, the error loss  of both neural networks is plotted in Figure \ref{fig:error_loss}. They both show the desired behaviour: quickly converging towards the designated error. However, the error loss observed for the binary neural network less smooth than the one observed for the multi neural network. These bumps could be due to the high momentum (0.9) used for the binary one compared to the low momentum for the multi one (0.001), suggesting that the momentum could be slightly tuned down.
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{report/figures/binary_error_loss.png}
+  \caption{MLP on binary dataset}
+  \label{fig:binary_error_loss}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{report/figures/multi_error_loss.png}
+  \caption{MLP on multi dataset}
+  \label{fig:multi_error_loss}
+\end{subfigure}
+\caption{\label{fig:error_loss}Plotted error loss.}
+\end{figure}
+
+\subsection{Final predictions \& Critical discussion}
+
+Finally, the test features are loaded memory in the same fashion the training data was. This is achieved by loading back the \textit{StandardScaler} (see Section \ref{sec:standard-scaling}) and \textit{PCA} (see Section \ref{sec:pca}) instances that initially learned the training data to transform the test data. The ``\textit{transform}'' function is used rather than the ``\textit{fit\_transform}'' function to do so.\\
 
 The predictions made on the testing data  found in ``\textit{X\_test.csv}'' are saved into a new  CSV file named ``\textit{Y\_test.csv}'', one for each  dataset. The binary and multi prediction files are uploaded to the online leaderboards tool provided  in order to get the final accuracy of the neural network:
+\begin{itemize}
+    \item Binary: 98.21\% accuracy
+    \item Multi: 97.58\% accuracy
+\end{itemize}
 
-todo add results here
+The accuracy of the predictions made by the two neural networks confirms that they fitted the training data well without underfitting nor overfitting it, and generalised well to unseen data. Further improvements could have potentially been made by exploring other advanced models proven to work with classification tasks, such as support vector machines, random forests or XGBoost \cite{Geron2019}. Based on the brief testing conducted earlier in Section \ref{sec:initial-model-selection-strategy}, the models seemed to either overfit the data or took too long to converge, depicting that deeper knowledge of these models is required to fine-tune their hyperparameters in order to correctly use them. For this reason, familiar models were chosen, with the neural network ultimately selected.
 
-
-\subsection{Critical discussion}
-
-todo
-
-% SVC and logistic regression  don't natively work with multilabel classification, whereas SGD does.
-
-% note: performing grid search on normally processed data, then feeding the oversampled data during cross validation will largely overfit the data. As a test, this classifier was used on the testing data and uploaded on the leaderboards website, resulting in 33\% accuracy only, confirming that the model overfit the data.
-
-% best NN based on NN without oversampling gives 93.21\% accuracy using cross validation.
-
-% multi data set oversampling overfits data (over 97\% in cross validation, 22\% accuracy on test data)
 
 % -------------------- APPENDIX --------------------
 
@@ -428,7 +434,6 @@ todo
 
 \bibliographystyle{unsrt}
 \bibliography{bibliography}
-
 
 % ------------------------
 
@@ -474,5 +479,22 @@ elif config.is_randomised_search:
 gs_results = searchCV.fit(self.X, self.y)
 \end{lstlisting}
 
+% ------------------------
+
+\clearpage
+\section{Final Neural Network Confusion Matrices (Not Normalised)}
+\label{sec:appendix-cm-not-normalised}
+
+\begin{figure}[h]
+\centerline{\includegraphics[width=0.6\textwidth]{report/figures/binary_mlp_class_distribution.png}}
+\caption{\label{fig:binary_mlp_class_distribution}Confusion matrix.}
+\end{figure}
+
+\begin{figure}[h]
+\centerline{\includegraphics[width=0.6\textwidth]{report/figures/multi_mlp_class_distribution.png}}
+\caption{\label{fig:multi_mlp_class_distribution}Confusion matrix.}
+\end{figure}
+
 \end{appendices}
 \end{document}
+
