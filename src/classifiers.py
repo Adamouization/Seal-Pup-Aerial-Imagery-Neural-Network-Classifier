@@ -13,7 +13,7 @@ from sklearn.svm import LinearSVC, SVC
 from sklearn.tree import DecisionTreeClassifier
 
 import src.config as config
-from src.helpers import get_classifier_name, save_model, save_plot
+from src.helpers import get_classifier_name, save_model, save_plot, load_model
 
 kwargs = {
     "random_state": config.RANDOM_SEED
@@ -143,6 +143,9 @@ class Classifier:
         _plot_pretty_confusion_matrix(cm, cm_labels, False)
         _plot_pretty_confusion_matrix(cm, cm_labels, True)
 
+        curve = self.clf.loss_curve_
+        _plot_mlp_error_loss(curve)
+
     @make_spin(Box1, "Performing hyperparameter tuning...")
     def hyperparameter_tuning(self) -> None:
         """
@@ -251,4 +254,18 @@ def _plot_pretty_confusion_matrix(cm, labels: list, is_normalised: bool) -> None
         save_plot("{}_{}_class_distribution_normalised".format(config.dataset, config.model))
     else:
         save_plot("{}_{}_class_distribution".format(config.dataset, config.model))
+    plt.show()
+
+
+def _plot_mlp_error_loss(curve) -> None:
+    """
+    Function for plotting the error loss of a neural network.
+    :param curve: the error loss curve
+    :return: None
+    """
+    # Plot error loss curve.
+    fig, ax = plt.subplots()
+    ax.plot(curve)
+    plt.xlabel("Epochs", fontsize=12)
+    plt.ylabel("Error loss", fontsize=12)
     plt.show()

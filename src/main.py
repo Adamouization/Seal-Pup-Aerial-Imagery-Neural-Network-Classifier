@@ -58,7 +58,7 @@ def main() -> None:
             # save_df_to_pickle(X_train_resampled, config.dataset, "X_train_resampled")
             # save_df_to_pickle(y_train_resampled, config.dataset, "Y_train_resampled")
             if config.verbose_mode:
-                visualise_class_distribution(X_train)
+                visualise_class_distribution(y_train)
 
             X = input_preparation(X_train)
             y, ground_truth = output_preparation(y_train)
