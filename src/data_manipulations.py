@@ -6,8 +6,9 @@ from pyspin.spin import Box1, make_spin
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
-import src.config as config
-from src.helpers import is_file_exists, load_transformation_pipeline, save_df_to_pickle, save_plot, save_transformation_pipeline
+import config as config
+from helpers import is_file_exists, load_transformation_pipeline, save_df_to_pickle, save_plot, \
+    save_transformation_pipeline
 
 
 @make_spin(Box1, "Loading training data into memory...")

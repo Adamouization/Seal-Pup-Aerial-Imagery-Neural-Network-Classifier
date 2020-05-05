@@ -12,8 +12,8 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.svm import LinearSVC, SVC
 from sklearn.tree import DecisionTreeClassifier
 
-import src.config as config
-from src.helpers import get_classifier_name, save_model, save_plot, load_model
+import config as config
+from helpers import get_classifier_name, save_model, save_plot, load_model
 
 kwargs = {
     "random_state": config.RANDOM_SEED

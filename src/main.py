@@ -1,10 +1,10 @@
 import argparse
 import time
 
-from src.classifiers import Classifier
-from src.data_manipulations import *
-from src.data_visualisation import *
-from src.helpers import load_model, print_error_message, print_runtime, save_df_to_pickle
+from classifiers import Classifier
+from data_manipulations import *
+from data_visualisation import *
+from helpers import load_model, print_error_message, print_runtime, save_df_to_pickle
 
 
 def main() -> None:

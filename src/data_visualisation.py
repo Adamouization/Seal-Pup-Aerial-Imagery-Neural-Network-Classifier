@@ -2,8 +2,8 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import pandas as pd
 
-import src.config as config
-from src.helpers import save_plot
+import config as config
+from helpers import save_plot
 
 
 def data_overview(dataset) -> None:
