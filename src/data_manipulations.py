@@ -109,6 +109,7 @@ def input_preparation(X_train, variance: float = 0.99):
     pca = PCA(n_components=number_dimensions)  # n_components is determined by running the code below.
     X_train_reduced = pca.fit_transform(X_train_df)
 
+    # Save the transformation objects that learned the data to use on the test data.
     save_transformation_pipeline(std_scaler, config.dataset, "standard_scaler")
     save_transformation_pipeline(pca, config.dataset, "pca")
 
@@ -147,6 +148,11 @@ def input_preparation(X_train, variance: float = 0.99):
 
 
 def test_data_preparation(X_test):
+    """
+    Apply the same data transformations that were used in training to the testing data.
+    :param X_test: the testing data in a DF.
+    :return: the transformed features.
+    """
     X_test_trimmed = pd.concat([X_test.iloc[:, :900], X_test.iloc[:, 916:]], axis=1)
     std_scaler = load_transformation_pipeline(config.dataset, "standard_scaler")
     X_train_scaled = std_scaler.transform(X_test_trimmed)

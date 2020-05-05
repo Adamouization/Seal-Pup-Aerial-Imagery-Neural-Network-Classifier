@@ -152,7 +152,7 @@ class Classifier:
         # Determine scoring metric to use based on dataset.
         scoring = str()
         if config.dataset == "binary":
-            scoring = "accuracy"
+            scoring = "f1"
         elif config.dataset == "multi":
             scoring = "f1_weighted"
 
@@ -160,11 +160,22 @@ class Classifier:
         search_alg_str = str()
         # Initialise Grid Search.
         if config.is_grid_search:
-            print("Hyperparameter tuning technique chose: GRID SEARCH")
-            parameters = {
-                'hidden_layer_sizes': [(100,), (475,), (1000,)],
-                'learning_rate_init': [0.1, 0.5, 1.0],
-            }
+            print("Hyperparameter tuning technique chosen: GRID SEARCH")
+            if config.dataset == "binary":
+                parameters = {
+                    "hidden_layer_sizes": [(98,), (98, 98), (114,), (114, 114)],
+                    "learning_rate_init": [0.001, 0.03, 0.04, 0.1],
+                    "alpha": [0.0001, 0.26, 0.96]
+                }
+                print("chose binary params")
+                print(parameters)
+            elif config.dataset == "multi":
+                parameters = {
+                    "hidden_layer_sizes": [(68,), (68, 68), (100,), (100, 100)],
+                    "learning_rate_init": [0.001, 0.01, 0.1],
+                    "momentum": [0.1, 0.9],
+                    "alpha": [0.0001, 0.1, 0.9]
+                }
             searchCV = GridSearchCV(
                 param_grid=parameters,
                 estimator=self.clf,
@@ -174,7 +185,7 @@ class Classifier:
             search_alg_str = "gs"
         # Initialise Randomised Search.
         elif config.is_randomised_search:
-            print("Hyperparameter tuning technique chose: RANDOMISED SEARCH")
+            print("Hyperparameter tuning technique chosen: RANDOMISED SEARCH")
             parameters = {
                 'hidden_layer_sizes': (sp_randint(1, 150)),
                 'learning_rate_init': sp_uniform(0.001, 1),
@@ -184,7 +195,7 @@ class Classifier:
             searchCV = RandomizedSearchCV(
                 param_distributions=parameters,
                 estimator=self.clf,
-                n_iter=75,
+                n_iter=100,
                 cv=self.folds,
                 scoring=scoring
             )
