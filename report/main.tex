@@ -85,7 +85,6 @@ The report is separated in four sections, starting with a general introductory s
     \item Python libraries used: SciKit-Learn \cite{scikit-learn}, Pandas \cite{reback2020pandas}, Matplotlib \cite{Hunter:2007}, NumPy \cite{numpy},  Seaborn \cite{seaborn} and Imbalanced-Learn \cite{JMLR:v18:16-365}.
     \item Editor: PyCharm\footnote{PyCharm: \url{https://www.jetbrains.com/pycharm/}}.
     \item Version controlling: Git and GitHub (private repository).
-    \item Initial code prototyping: Jupyter Lab.
 \end{itemize}
 
 \subsection{Project structure}
@@ -155,7 +154,7 @@ This initial overview confirms that no data encoding is required to use the feat
 \subsubsection{Classes distribution}
 \label{sec:classes-distribution}
 
-s this is a classification task, it is important to verify the distribution of classes in the training  set to determine whether the data is skewed or not (whether some classes are much more frequent than other classes \cite{Geron2019}). This is achieved by plotting the labels found in ``\textit{Y\_train.csv}'' in bar charts (see Figure \ref{fig:class_distribution}).\\
+Because this is a classification task, it is important to visualise the distribution of classes in the training  set to determine whether the data is skewed or not (whether some classes are much more frequent than other classes \cite{Geron2019}). This is achieved by plotting the labels found in ``\textit{Y\_train.csv}'' in bar charts (see Figure \ref{fig:class_distribution}).\\
 
 \begin{figure}[h]
 \centering
@@ -183,22 +182,7 @@ There are three different types of features describing each image (row) in the d
     \item 16-bin \textit{RGB colour histograms}, corresponding to the last 48 columns in the features dataset.
 \end{itemize}
 
-Not all 964 features should be used due to the large complexity introduced by the number of dimensions the data has, also known as the curse of dimensionality \cite{Geron2019}. A preliminary check to determine which features can be considered ``important'' is conducted by calculating the standard correlation coefficient, a value ranging between -1 and 1, between the labels in (``\textit{Y\_train.csv}'') and all the features ``\textit{X\_train.csv}''. A value close to 1 indicates a strong positive linear correlation, while a correlation close to -1 indicates a strong negative linear correlation. However, a correlation close to 0 indicates a lack of relationship in the data. According to existing literature, features are considered to have a high correlation when they have values in the region of $[|0.5,0.7|]$ \cite{Geron2019} \cite{Badr2019}. To determine which features show the highest correlation with the class labels, the \textit{pandas.DataFrame.corr} function is used on a concatenated DataFrame of the features and the labels. The ten features with the highest positive and negative correlation are shown in Figure \ref{fig:correlation-results}.
-
-\begin{figure}[h]
-\centering
-\begin{subfigure}{.49\textwidth}
-  \centering
-  \includegraphics[width=\textwidth]{report/figures/corr_pos.png}
-  \label{fig:corr_pos}
-\end{subfigure}%
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=\textwidth]{report/figures/corr_neg.png}
-  \label{fig:corr_neg}
-\end{subfigure}
-\caption{\label{fig:correlation-results}Top 10 training dataset column indexes (features) with the highest standard correlation coefficient. Left shows positive correlations, right shows negative correlation.}
-\end{figure}
+Not all 964 features should be used due to the large complexity introduced by the number of dimensions the data has, also known as the curse of dimensionality \cite{Geron2019}. A preliminary check to determine which features can be considered ``important'' is conducted by calculating the standard correlation coefficient, a value ranging between -1 and 1, between the labels in (``\textit{Y\_train.csv}'') and all the features ``\textit{X\_train.csv}''. A value close to 1 indicates a strong positive linear correlation, while a correlation close to -1 indicates a strong negative linear correlation. However, a correlation close to 0 indicates a lack of relationship in the data. According to existing literature, features are considered to have a high correlation when they have values in the region of $[|0.5,0.7|]$ \cite{Geron2019} \cite{Badr2019}. To determine which features show the highest correlation with the class labels, the \textit{pandas.DataFrame.corr} function is used on a concatenated DataFrame of the features and the labels. The ten features with the highest positive and negative correlation are shown in Appendix \ref{sec:appendix-correlation}.\\
 
 A high positive correlation is achieved for features ranging between columns 916-964, which corresponds to RGB colour histograms, while high negative correlation is achieved for features ranging between columns 0-900, which corresponds to HoGs. However, because no feature from the normal distribution have a high correlation  with the class labels, it can be dropped altogether.
 
@@ -371,11 +355,11 @@ Training is tackled as follows:
 
 \subsection{Evaluating the optimal neural networks}
 
-The training execution flow mentioned in Section \ref{sec:full-training-approach} is followed for both the binary and multi datasets. Table \ref{tab:results} documents the cross-validation performances for the two optimal neural networks trained for each dataset.
+The training execution flow mentioned in Section \ref{sec:full-training-approach} is followed for both the binary and multi datasets. Table \ref{tab:results} documents the cross-validation performances for the two optimal neural networks trained for each dataset.\\
 
 \input{report/table/final_results}
 
-The table indicates that the neural networks determined via hyperparameter fine-tuning perform well, achieving high F1 scores. Further analysis can be conducted by observing their normalised confusion matrices in Figure \ref{fig:mlp_class_distribution_normalised}:
+The table indicates that the neural networks determined via hyperparameter fine-tuning perform well, achieving high F1 scores. Further analysis can be conducted by observing their normalised confusion matrices in Figure \ref{fig:mlp_class_distribution_normalised} (see Appendix \ref{sec:appendix-cm-not-normalised} for non-normalised confusion matrices).\\
 
 \begin{figure}[h]
 \centering
@@ -389,7 +373,7 @@ The table indicates that the neural networks determined via hyperparameter fine-
   \includegraphics[width=\textwidth]{report/figures/multi_mlp_class_distribution_normalised.png}
   \label{fig:multi_mlp_class_distribution_normalised}
 \end{subfigure}
-\caption{\label{fig:mlp_class_distribution_normalised}Normalised confusion matrices.}
+\caption{\label{fig:mlp_class_distribution_normalised}Normalised confusion matrices for optimal neural network models.}
 \end{figure}
 
 The normalised confusion matrices for the binary dataset reveal that all background predictions are correct, while only a few backgrounds are misclassified as seals. This could perhaps indicate that the synthetic seal samples created are not as good as the original background samples, pointing towards using a more efficient oversampling algorithm. Concerning the multi dataset, there are a lot more misclassifications due to confusion amongst the different types of seals. Indeed, there is often confusion between which type of seal is in the image, especially when whitecoat predictions are made (the whitecoat column is often filled). However, there are two pleasant surprises. The first one is how the infrequent classes, dead pups and juvenile, are often correctly classified when predicted, and the second is how any type of seal prediction is never classified as a background, indicating despite being confused about the type of seal, the neural network never classified a seal as a background.\\
@@ -410,7 +394,7 @@ Finally, the error loss  of both neural networks is plotted in Figure \ref{fig:e
   \caption{MLP on multi dataset}
   \label{fig:multi_error_loss}
 \end{subfigure}
-\caption{\label{fig:error_loss}Plotted error loss.}
+\caption{\label{fig:error_loss}Plotted error loss for optimal neural network models.}
 \end{figure}
 
 \subsection{Final predictions \& Critical discussion}
@@ -436,6 +420,27 @@ The accuracy of the predictions made by the two neural networks confirms that th
 \bibliography{bibliography}
 
 % ------------------------
+
+\clearpage
+\section{Features With Highest Correlation}
+\label{sec:appendix-correlation}
+
+Top 10 training dataset column indexes (features) with the highest standard correlation coefficient. Left shows positive correlations, right shows negative correlation.
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.49\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{report/figures/corr_pos.png}
+  \label{fig:corr_pos}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{report/figures/corr_neg.png}
+  \label{fig:corr_neg}
+\end{subfigure}
+\caption{\label{fig:correlation-results}Positive correlations (left) and negative correlations (right).}
+\end{figure}
 
 \clearpage
 \section{Initial Default Classifiers Evaluation}
@@ -487,12 +492,12 @@ gs_results = searchCV.fit(self.X, self.y)
 
 \begin{figure}[h]
 \centerline{\includegraphics[width=0.6\textwidth]{report/figures/binary_mlp_class_distribution.png}}
-\caption{\label{fig:binary_mlp_class_distribution}Confusion matrix.}
+\caption{\label{fig:binary_mlp_class_distribution}Confusion matrix for binary dataset.}
 \end{figure}
 
 \begin{figure}[h]
 \centerline{\includegraphics[width=0.6\textwidth]{report/figures/multi_mlp_class_distribution.png}}
-\caption{\label{fig:multi_mlp_class_distribution}Confusion matrix.}
+\caption{\label{fig:multi_mlp_class_distribution}Confusion matrix for multi dataset.}
 \end{figure}
 
 \end{appendices}
