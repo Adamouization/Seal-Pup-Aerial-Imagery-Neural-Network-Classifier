@@ -115,12 +115,12 @@ where:
 
 The project is organised into the following python modules:
 \begin{itemize}
-    \item `\textit{main.py}': 
-    \item `\textit{data\_visualisation.py}': 
-    \item `\textit{data\_manipulations.py}': 
-    \item `\textit{classifiers.py}':
-    \item `\textit{helpers.py}': 
-    \item `\textit{config.py}': 
+    \item `\textit{main.py}': contains functions to parse command line arguments and control the different sections of the code.
+    \item `\textit{data\_visualisation.py}': contains functions to visualise the data's features and distribution.
+    \item `\textit{data\_manipulations.py}': contains functions to process the features and labels of the data before feeding it to the classifiers.
+    \item `\textit{classifiers.py}': contains a \textit{Classifier} class to create a Scikit-Learn classifier, fit it, tune it and evaluate it.
+    \item `\textit{helpers.py}': contains general functions to perform general operations on the data or print statements on the command line.
+    \item `\textit{config.py}': contains project-wide variables that are set by the command line arguments.
 \end{itemize}
 
 \subsection{Execution flow}
@@ -158,7 +158,7 @@ The provided CSV files are directly loaded into distinct Pandas DataFrames\footn
 
 % -------------------
 
-\subsection{Data visualisation \& Analysis}
+\subsection{Data visualisation \& analysis}
 
 This data visualisation step\footnote{Note: running the code to visualise all the figures and tables produced takes roughly 80 seconds.} is crucial to understand the data and its underlying patterns before fitting a classification model to the training data.
 
@@ -261,13 +261,30 @@ Due to the considerable spread across the x and y axes witnessed in the range of
 \subsection{Data pre-processing}
 \label{sec:data-preprocessing-steps}
 
-With the data visualisation and analysis steps completed, the training set can now be pre-processed to optimise the classification models’ fit on the data. Based on the conclusions made from the data analysis, three pre-processing steps are carried out.
+With the data visualisation and analysis steps completed, the training set can now be pre-processed to optimise the classification models’ fit on the data. Based on the conclusions made from the data analysis, five pre-processing steps are carried out.
 
 \subsubsection{Step 1: SMOTE oversampling}
 
-todo
+To solve the issue of skewed datasets raised in Section \ref{sec:classes-distribution}, one potential solution is to undersample or oversample the data. Undersampling the data is considered inefficient on its own as it may discard useful information from the training set. Regarding oversampling, many techniques exist, with the most simple one consisting in duplicating the samples from the infrequent classes to diminish the imbalance. However, such an approach would likely cause the classifier to overfit the data as samples from infrequent classes would have a very large weights, causing the classifiers to learn these examples ``by heart'', thus not generalising well to unseen data, even if it is similar.\\
 
-classes distribution Section \ref{sec:classes-distribution}
+An alternative is to produce synthetic data based on the infrequent classes by creating ``similar'' copies. This is achieved through the Synthetic Minority Over-Sampling Technique (SMOTE), which uses the K-Nearest Neighbours (kNN) algorithm to create similar data. These newly created samples are therefore not copies of the original ones, meaning the classifier will be better able to generalise. The changes to both datasets after oversampling with SMOTE are shown in Figure \ref{fig:class_distribution_oversample} (compare with the class distributions found in Figure \ref{fig:class_distribution}).
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{results/binary_class_distribution.png}
+  \label{fig:binary_class_distribution_oversample}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{results/multi_class_distribution.png}
+  \label{fig:multi_class_distribution_oversample}
+\end{subfigure}
+\caption{\label{fig:class_distribution_oversample}Class distribution of the binary (left) and multi (right) datasets after SMOTE oversampling.}
+\end{figure}
+
+The number of least frequent classes are all brought up to the number of the most abundant class, which is ``\textit{background}''. This could improve the binary dataset by rising the number of ``\textit{seals}'' to XXX  to XXX, which is acceptable; but it causes the multi dataset to become too large, rising from XXX to XXX. Additionally, in the case of the ``\textit{juvenile}'' class, over XX samples are created from only XXX samples, raising doubt about how close to the original samples the synthetic ones are. Indeed, performing a quick cross validation test using the oversampled data on the multi dataset to confirm the aforementioned doubts reveals that the classifier largely overfits the oversampled data, reaching ~97\% accuracy using cross-validation, but only 22\% accuracy after being predictions on the test data through online leaderboards tool provided\footnote{The terms used in this paragraph are all explained in further sections.}. Therefore, SMOTE oversampling is only applied to the binary dataset.
 
 \subsubsection{Step 2: Dropping features with poor correlation}
 \label{sec:drop-poor-features}
@@ -301,26 +318,35 @@ However, the curse of dimensionality remains as there are still 948 columns in t
 \caption{\label{fig:explained_variance}Explained variance plotted against number of dimensions to reveal the number of dimensions that are  required to maintain 99\% variance in both datasets.}
 \end{figure}
 
-\subsubsection{Step 5: Label prepration}
+\subsubsection{Step 5: Label preparation}
 
 todo
 
 % -------------------
 
-\subsection{Model Training}
+\subsection{Model training}
 
 \subsubsection{Model selection strategy}
 
-At this point, the training data is ready to be fed into the classifiers. The classification models will fit the features found in ``\textit{X\_train.csv}'' before making their own predictions, which will be compared with the real labels found in ``\textit{Y\_train.csv}'' for evaluation.\\
+At this point, the training data is ready to be fed into the classifiers. The classification models will fit the transformed features from ``\textit{X\_train.csv}'' before making their own predictions, which will be compared with the real labels found in ``\textit{Y\_train.csv}'' for evaluation.\\
 
 According to A. Géron, an efficient approach to model selection is to try out multiple classifiers, with hyperparameters close to the default values recommended by Scikit-Learn. The goal of this method is to gain a high-level intuition of which classification models to further explore and tweak \cite{Geron2019}.\\
 
-After briefly evaluating a Stochastic Gradient Descent (SGD) classifier, One-verus-Rest (OvR) Logistic Regression, Linear and Polynomial (3rd degree) Support Vector Classifiers (SVC), Decision Tree and Multi Layer Perceptron\footnote{Multi Layer Perceptron are also known as Neural Networks} (MLP), using 3-fold cross validation, the MLP was selected due to its consistency across different scoring methods and its lower runtime. ``Simpler'' models such as the SGD or OvR logistic regressor were not customisable enough, running the risk of poorly adapting to the large dataset, whereas Support  Vector Machine-based and Decision Tree-based classifiers took a very long time to fit and  are likely to overfit the data if poorly tuned. Therefore, neural networks provided the perfect middle ground for being highly customisable (23 hyperparameters) and quicker than the other models. See Appendix \ref{sec:appendix-initial-default-classifiers} for the results in tabular format.
+After briefly evaluating a Stochastic Gradient Descent (SGD) classifier, One-verus-Rest (OvR) Logistic Regression, Linear and Polynomial (3rd degree) Support Vector Classifiers (SVC), Decision Tree and Multi Layer Perceptron\footnote{Multi Layer Perceptron are also known as Neural Networks} (MLP), using 3-fold cross validation on all, the MLP was selected due to its consistency across different scoring methods and its lower runtime. ``Simpler'' models such as the SGD or OvR logistic regressor were not customisable enough, running the risk of poorly adapting to the large dataset, whereas Support  Vector Machine-based and Decision Tree-based classifiers took a very long time to fit and  are likely to overfit the data if poorly tuned. Therefore, neural networks provided the perfect middle ground for being highly customisable (23 hyperparameters) and quicker than the other models. See Appendix \ref{sec:appendix-initial-default-classifiers} for the results in tabular format.
 
 \subsubsection{Classification performance metrics}
 \label{sec:performance-metrics}
 
-As mentioned earlier in Section \ref{sec:classes-distribution}, simply using accuracy can be misleading. Therefore, other metrics are used, namely the F1 score and confusion matrices.
+As mentioned in Section \ref{sec:classes-distribution}, simply using accuracy can be misleading. Therefore, other metrics are used, namely confusion matrices and the F1 score.
+
+\paragraph{Confusion matrix} This metric plots the number of predictions made for each class for each possible class in a table, with each row corresponding to the actual labels (the ones found in ``\textit{Y\_train.csv}'') and each column corresponding to a prediction. It is very useful for detecting which actual classes are being detected the most, and what predicted classes are misclassified as. To further highlight the misclassifications, the confusion matrix can be normalised to show a percentage \cite{Geron2019}.
+
+\paragraph{F1 Score} \textit{Precision} corresponds to the number of positive predictions for a class, whereas \textit{recall} is the number of positive instances  that are correctly predicted. Together, they can be combined into a more concise metric, which is the \textit{F1 score} (see Equation \ref{eq:f1-score}). It corresponds to the harmonic mean of precision and recall, meaning that to achieve a high F1 score, both precision and recall must be high (unlike a regular mean). Because when  the precision goes down the recall goes up, and vice versa, the F1 score is a reliable metric to evaluate a classifier since a high F1 score means a balance has been found between precision and recall \cite{Geron2019}.
+
+\begin{equation}
+\label{eq:f1-score}
+    F_{1} = \frac{2}{\frac{1}{precision} + \frac{1}{recall}} = \frac{TP}{TP+\frac{FN + FP}{2}}
+\end{equation}
 
 \subsubsection{K-fold cross validation}
 
@@ -332,37 +358,16 @@ Additionally, the multi layer perceptron classifiers being the quickest  models 
 
 \subsubsection{Neural network hyperparameter tuning}
 
-The hyperparameters of Scikit-Learn’s neural network classifier class \textit{sklearn.neural\_network.MLPClassifier} are manually tried out to briefly evaluate which have an impact on the evaluation. Next, two hyperparameter tuning algorithms are run to converge towards optimal classifiers for each dataset. An initial \textit{randomised search} algorithm is run to shortlist hyperparameters that work well through the \textit{sklearn.model\_selection.RandomizedSearchCV} class. This algorithm is first chosen due to the large hyperparameter space of neural networks \cite{Geron2019}. Next, the neural network is fine-tuned with the promising hyperparameters found from the randomised search by running a grid search algorithm through the \textit{sklearn.model\_selection.GridSearchCV} class. The randomised search evaluate the model using cross-validation with random hyperparameter values, while the grid search evaluates the model with all possible combinations of hyperparameters that are specified, making it the most efficient way of fine-tuning the regression models as manually finding and testing different combinations of parameters is very time-consuming \cite{Geron2019}. The following combinations are explored using randomised and grid search, resulting in over XXX models evaluated:
+The hyperparameters of Scikit-Learn’s neural network classifier class \textit{sklearn.neural\_network. MLPClassifier} are manually tried out to briefly evaluate which have an impact on the evaluation. Next, two hyperparameter tuning algorithms are run to converge towards optimal classifiers for each dataset. An initial \textit{randomised search} algorithm is run to shortlist hyperparameters that work well through the \textit{sklearn.model\_selection.RandomizedSearchCV} class. This algorithm is first chosen due to the large hyperparameter space of neural networks \cite{Geron2019}. Next, the neural network is fine-tuned with the promising hyperparameters found from the randomised search by running a \textit{grid search} algorithm through the \textit{sklearn.model\_selection.GridSearchCV} class. The randomised search evaluate the model using cross-validation with random hyperparameter values, while the grid search evaluates the model with all possible combinations of hyperparameters that are specified, making it the most efficient way of fine-tuning the regression models as manually finding and testing different combinations of parameters is very time-consuming \cite{Geron2019}.\\
 
-\begin{lstlisting}[language=Python]
-# Initialise Grid Search.
-if config.is_grid_search:
-    if config.dataset == "binary":
-        parameters = {
-            "hidden_layer_sizes": [(98,), (98, 98), (114,), (114, 114)],
-            "learning_rate_init": [0.001, 0.03, 0.04, 0.1],
-            "alpha": [0.0001, 0.26, 0.96]
-        }
-    elif config.dataset == "multi":
-        parameters = {
-            "hidden_layer_sizes": [(68,), (68, 68), (100,), (100, 100)],
-            "learning_rate_init": [0.001, 0.01, 0.1],
-            "momentum": [0.1, 0.9],
-            "alpha": [0.0001, 0.1, 0.9]
-        }
-    searchCV = GridSearchCV(param_grid=parameters, estimator=self.clf, cv=self.folds, scoring=scoring)
-# Initialise Randomised Search.
-elif config.is_randomised_search:
-    parameters = {
-        'hidden_layer_sizes': (sp_randint(1, 150)),
-        'learning_rate_init': sp_uniform(0.001, 1),
-        'momentum': sp_uniform(0.1, 0.9),
-        'alpha': sp_uniform(0.0001, 1)
-    }
-    searchCV = RandomizedSearchCV(param_distributions=parameters, estimator=self.clf, n_iter=100, cv=self.folds, scoring=scoring)
-gs_results = searchCV.fit(self.X, self.y)
+Neural networks have complex layered structures. Figure \ref{fig:neural_network} depicts a potential neural network that could be used to learn the data, containing an input layer a number of neurons equivalent to the number of features used (492 for the binary dataset, 475 for the multi), a hidden layer (the default Scikit-Learn size is 100 neurons) and an output layer with as many neurons as there are classes.
 
-\end{lstlisting}
+\begin{figure}[h]
+\centerline{\includegraphics[width=0.8\textwidth]{report/figures/neural_network.png}}
+\caption{\label{fig:neural_network}Visualisation of a potential neural network to learn the data.}
+\end{figure}
+
+To account for the ``deep'' structure of the neural network which could easily overfit the data, two of the hyperparameters explored is the amount of regularisation ``alpha'' and the number of neurons in the hidden layer. Additionally, because the neural network uses a stochastic gradient descent-based approach to minimise the error at each epoch (iteration) and backpropagation to adjust the weights accordingly at each epoch \cite{russell2016artificial}, the learning rate and and momentum hyperparameters are explored as well. The different combinations of parameters explored across the binary and multi datasets are located in Appendix \ref{sec:appendix-randomised-grid-search}, resulting in over XXX models evaluated.\\
 
 The results are all reported back into CSV files containing information about each combination of hyperparameters. The various models evaluated using  3-fold cross validation are ranked by their F1 score to determine how well the hyperparameters worked on them. The full results of each search are stored in csv files in the ``\textit{results/grid\_search}'' directory.
 
@@ -424,24 +429,50 @@ todo
 \bibliographystyle{unsrt}
 \bibliography{bibliography}
 
-% --------------------
-
-\clearpage
-\section{Project Structure}
-\label{sec:appendix-project-structure}
-
-A screenshot of the project's file structure in the PyCharm IDE to illustrate the Python modules and data organisation.
-
-add screenshot
 
 % ------------------------
 
 \clearpage
-\section{Initial Default Classifiers}
+\section{Initial Default Classifiers Evaluation}
 \label{sec:appendix-initial-default-classifiers}
 
 \input{report/table/initial_binary_classifiers}
 \input{report/table/initial_multi_classifiers}
+
+% ------------------------
+
+\clearpage
+\section{Hyperparameter Tuning Combinations}
+\label{sec:appendix-randomised-grid-search}
+
+\begin{lstlisting}[language=Python]
+# Initialise Grid Search.
+if config.is_grid_search:
+    if config.dataset == "binary":
+        parameters = {
+            "hidden_layer_sizes": [(98,), (98, 98), (114,), (114, 114)],
+            "learning_rate_init": [0.001, 0.03, 0.04, 0.1],
+            "alpha": [0.0001, 0.26, 0.96]
+        }
+    elif config.dataset == "multi":
+        parameters = {
+            "hidden_layer_sizes": [(68,), (68, 68), (100,), (100, 100)],
+            "learning_rate_init": [0.001, 0.01, 0.1],
+            "momentum": [0.1, 0.9],
+            "alpha": [0.0001, 0.1, 0.9]
+        }
+    searchCV = GridSearchCV(param_grid=parameters, estimator=self.clf, cv=self.folds, scoring=scoring)
+# Initialise Randomised Search.
+elif config.is_randomised_search:
+    parameters = {
+        'hidden_layer_sizes': (sp_randint(1, 150)),
+        'learning_rate_init': sp_uniform(0.001, 1),
+        'momentum': sp_uniform(0.1, 0.9),
+        'alpha': sp_uniform(0.0001, 1)
+    }
+    searchCV = RandomizedSearchCV(param_distributions=parameters, estimator=self.clf, n_iter=100, cv=self.folds, scoring=scoring)
+gs_results = searchCV.fit(self.X, self.y)
+\end{lstlisting}
 
 \end{appendices}
 \end{document}
