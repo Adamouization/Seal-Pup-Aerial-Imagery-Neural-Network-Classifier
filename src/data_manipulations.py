@@ -26,8 +26,8 @@ def load_training_data():
 
     # If PKL format not found, loads CSV file into memory (slower loadings times).
     else:
-        X_train = pd.read_csv("/data/CS5014-P2/{}/X_train.csv".format(config.dataset), header=None)
-        y_train = pd.read_csv("/data/CS5014-P2/{}/Y_train.csv".format(config.dataset), header=None)
+        X_train = pd.read_csv("../data/{}/X_train.csv".format(config.dataset), header=None)
+        y_train = pd.read_csv("../data/{}/Y_train.csv".format(config.dataset), header=None)
         print("\nData loaded from 'X_train.csv' and 'y_train.csv'")
     return X_train, y_train
 
@@ -46,7 +46,7 @@ def load_testing_data():
 
     # If PKL format not found, loads CSV file into memory (slower loadings times).
     else:
-        X_test = pd.read_csv("/data/CS5014-P2/{}/X_test.csv".format(config.dataset), header=None)
+        X_test = pd.read_csv("../data/CS5014-P2/{}/X_test.csv".format(config.dataset), header=None)
         print("\nData loaded from 'X_test.csv'")
     return X_test
 
