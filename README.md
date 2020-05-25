@@ -2,7 +2,7 @@
 
 This practical covers the exploration of various machine learning practices used for classifying different types of seal pups found in cropped aerial imagery obtained during seasonal surveys of islands. Various data visualisation techniques, data processing steps and classiﬁcation models are experimented with to design a final pipeline for making predictions on the types of seals observed in the images. The predictions are made by training multiple classiﬁcation models, which are all evaluated to determine their performance.
 
-You can read the [full report here](https://github.com/Adamouization/Seal-Pup-Aerial-Imagery-Classifier/blob/master/report/report.pdf).
+You can read the [full report here](https://github.com/Adamouization/Seal-Pup-Aerial-Imagery-Neural-Network-Classifier/blob/master/report/report.pdf).
 
 ## Dataset
 
@@ -61,7 +61,7 @@ where:
 * *"-v"*: is an optional flag that enters verbose (debugging) mode, printing additional statements on the command line.
 
 ## License 
-* see [LICENSE](https://github.com/Adamouization/Seal-Pup-Aerial-Imagery-Classifier/blob/master/LICENSE) file.
+* see [LICENSE](https://github.com/Adamouization/Seal-Pup-Aerial-Imagery-Neural-Network-Classifier/blob/master/LICENSE) file.
 
 ## Contact
 * Email: adam@jaamour.com
